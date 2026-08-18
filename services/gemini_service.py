@@ -5,7 +5,7 @@ from google import genai
 from google.genai import types
 
 
-MODEL_NAME = "gemini-3.6-flash"
+MODEL_NAME = "gemini-3.5-flash"
 
 
 @st.cache_resource

@@ -2,6 +2,7 @@ import streamlit as st
 from pathlib import Path
 import pandas as pd
 import plotly.express as px
+from PIL import Image
 
 from services.gemini_service import analyze_decision
 from utils.data_processor import (
@@ -20,23 +21,25 @@ from services.scenario_engine import (
     calculate_scenario_score,
     compare_scores
 )
+
+LOGO_PATH = Path("assets/deciscope_logo.png")
+PAGE_ICON = Image.open(LOGO_PATH) if LOGO_PATH.exists() else "DS"
+
+st.set_page_config(
+    page_title="DeciScope",
+    page_icon=PAGE_ICON,
+    layout="wide"
+)
+
+
 def load_css():
-
     css_path = Path("styles.css")
-
-    with open(css_path, "r", encoding="utf-8") as f:
-        st.markdown(
-            f"<style>{f.read()}</style>",
-            unsafe_allow_html=True
-        )
+    if css_path.exists():
+        with open(css_path, "r", encoding="utf-8") as f:
+            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 
 load_css()
-st.set_page_config(
-    page_title="DeciScope",
-    page_icon="DS",
-    layout="wide"
-)
 # =========================================================
 # DECISCOPE UI STYLING
 # =========================================================
@@ -56,7 +59,7 @@ if "scenario_used" not in st.session_state:
 if "brief_viewed" not in st.session_state:
     st.session_state.brief_viewed = False
 # =========================================================
-# DECISCOPE — FINAL UI THEME
+# DECISCOPE FINAL UI THEME
 # =========================================================
 # =========================================================
 # DECISCOPE BACKGROUND ORBS
@@ -67,710 +70,10 @@ st.markdown("""
 <div class="deciscope-orb orb-two"></div>
 <div class="deciscope-orb orb-three"></div>
 """, unsafe_allow_html=True)
-st.markdown("""
-<style>
-
-/* =========================================================
-   1. GLOBAL APP
-   ========================================================= */
-
-.stApp {
-    background:
-        radial-gradient(
-            circle at 85% 5%,
-            rgba(99, 102, 241, 0.07),
-            transparent 28%
-        ),
-        radial-gradient(
-            circle at 10% 90%,
-            rgba(148, 163, 184, 0.07),
-            transparent 30%
-        ),
-        #F7F8FC;
-
-    color: #111827;
-}
-
-/* =====================================================
-   ANIMATED BACKGROUND ORBS
-===================================================== */
-
-.deciscope-orb {
-    position: fixed;
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 0;
-    filter: blur(70px);
-}
-
-/* top-right */
-.orb-one {
-    width: 280px;
-    height: 280px;
-    right: 5%;
-    top: 8%;
-  background: rgba(99, 102, 241, 0.45);
-    animation: orbMoveOne 16s ease-in-out infinite;
-}
-
-/* bottom-left */
-.orb-two {
-    width: 240px;
-    height: 240px;
-    left: 8%;
-    bottom: 5%;
-    background: rgba(148, 163, 184, 0.18);
-    animation: orbMoveTwo 20s ease-in-out infinite;
-}
-
-/* middle */
-.orb-three {
-    width: 180px;
-    height: 180px;
-    left: 48%;
-    top: 45%;
-    background: rgba(129, 140, 248, 0.08);
-    animation: orbMoveThree 24s ease-in-out infinite;
-}
-
-
-/* =====================================================
-   ORB ANIMATIONS
-===================================================== */
-
-@keyframes orbMoveOne {
-
-    0%, 100% {
-        transform: translate(0px, 0px);
-    }
-
-    50% {
-        transform: translate(-60px, 45px);
-    }
-
-}
-
-@keyframes orbMoveTwo {
-
-    0%, 100% {
-        transform: translate(0px, 0px);
-    }
-
-    50% {
-        transform: translate(55px, -45px);
-    }
-
-}
-
-@keyframes orbMoveThree {
-
-    0%, 100% {
-        transform: translate(0px, 0px);
-    }
-
-    50% {
-        transform: translate(-35px, 30px);
-    }
-
-}
-
-/* =========================================================
-   3. MAIN CONTENT
-   ========================================================= */
-
-.main .block-container {
-
-    padding-top: 2.5rem;
-    padding-bottom: 4rem;
-
-    position: relative;
-    z-index: 1;
-
-    animation:
-        deciPageIn
-        0.35s
-        ease-out;
-}
-
-
-@keyframes deciPageIn {
-
-    from {
-        opacity: 0;
-        transform: translateY(6px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-
-/* =========================================================
-   4. TYPOGRAPHY
-   ========================================================= */
-
-h1 {
-    color: #111827 !important;
-
-    font-weight: 700 !important;
-
-    letter-spacing: -0.8px;
-}
-
-
-h2 {
-    color: #111827 !important;
-
-    font-weight: 650 !important;
-
-    letter-spacing: -0.5px;
-}
-
-
-h3 {
-    color: #111827 !important;
-
-    font-weight: 600 !important;
-}
-
-
-p {
-    color: #1F2937;
-}
-
-
-/* =========================================================
-   5. CAPTIONS — DARK
-   ========================================================= */
-
-[data-testid="stCaptionContainer"],
-[data-testid="stCaptionContainer"] p {
-
-    color: #111827 !important;
-
-    opacity: 1 !important;
-}
-
-
-/* =========================================================
-   6. SIDEBAR
-   ========================================================= */
-
-section[data-testid="stSidebar"] {
-
-    background: #F3F4F6 !important;
-
-    border-right:
-        1px solid #E1E4E8 !important;
-
-    position: relative;
-
-    z-index: 2;
-}
-
-
-section[data-testid="stSidebar"] > div {
-
-    background: #F3F4F6 !important;
-
-    padding-top: 1.5rem;
-}
-
-
-/* Sidebar headings */
-
-section[data-testid="stSidebar"] h2,
-section[data-testid="stSidebar"] h3 {
-
-    color: #111827 !important;
-}
-
-
-/* Sidebar normal text */
-
-section[data-testid="stSidebar"] p {
-
-    color: #1F2937 !important;
-}
-
-
-/* Sidebar captions */
-
-section[data-testid="stSidebar"]
-[data-testid="stCaptionContainer"] p {
-
-    color: #374151 !important;
-}
-
-
-/* =========================================================
-   7. SIDEBAR WORKSPACE NAVIGATION
-   ========================================================= */
-
-section[data-testid="stSidebar"]
-div[role="radiogroup"]
-label {
-
-    background: transparent !important;
-
-    color: #111827 !important;
-
-    border-radius: 10px !important;
-
-    border-left:
-        3px solid transparent !important;
-
-    padding:
-        9px 12px !important;
-
-    margin:
-        3px 0 !important;
-
-    transition:
-        background 0.2s ease,
-        border-color 0.2s ease;
-}
-
-
-/* Navigation text */
-
-section[data-testid="stSidebar"]
-div[role="radiogroup"]
-label p {
-
-    color: #111827 !important;
-}
-
-
-/* ACTIVE ITEM */
-
-section[data-testid="stSidebar"]
-div[role="radiogroup"]
-label:has(input:checked) {
-
-    background: #E1E4E8 !important;
-
-    border-left:
-        3px solid #9CA3AF !important;
-}
-
-
-/* Active text */
-
-section[data-testid="stSidebar"]
-div[role="radiogroup"]
-label:has(input:checked) p {
-
-    color: #111827 !important;
-
-    font-weight: 600 !important;
-}
-
-
-/* Hover */
-
-section[data-testid="stSidebar"]
-div[role="radiogroup"]
-label:hover {
-
-    background: #E8EAED !important;
-}
-
-
-/* Radio accent */
-
-section[data-testid="stSidebar"]
-div[role="radiogroup"]
-label input {
-
-    accent-color: #6B7280 !important;
-}
-
-
-/* Remove focus glow */
-
-section[data-testid="stSidebar"]
-div[role="radiogroup"]
-label:has(input:focus) {
-
-    box-shadow: none !important;
-}
-
-
-/* =========================================================
-   8. CARDS
-   ========================================================= */
-
-div[data-testid="stVerticalBlockBorderWrapper"] {
-
-    background:
-        rgba(255, 255, 255, 0.92) !important;
-
-    border:
-        1px solid #E4E7EC !important;
-
-    border-radius:
-        16px !important;
-
-    box-shadow:
-        0 5px 20px
-        rgba(25, 30, 50, 0.04);
-}
-
-
-/* =========================================================
-   9. BUTTONS
-   ========================================================= */
-
-.stButton > button {
-
-    border-radius:
-        10px !important;
-
-    border:
-        1px solid #D1D5DB !important;
-
-    background:
-        #FFFFFF !important;
-
-   
-
-    font-weight:
-        550 !important;
-
-    padding:
-        0.55rem 1.1rem !important;
-
-    transition:
-        transform 0.18s ease,
-        box-shadow 0.18s ease,
-        background 0.18s ease;
-}
-
-
-.stButton > button:hover {
-
-    transform:
-        translateY(-1px);
-
-    background:
-        #F3F4F6 !important;
-
-    border-color:
-        #9CA3AF !important;
-
-    box-shadow:
-        0 5px 15px
-        rgba(25, 30, 50, 0.08);
-}
-
-
-/* Primary button */
-
-.stButton > button[kind="primary"] {
-
-    background:
-        #374151 !important;
-
-    color:
-        #FFFFFF !important;
-
-    border:
-        none !important;
-}
-
-
-.stButton > button[kind="primary"]:hover {
-
-    background:
-        #1F2937 !important;
-
-    box-shadow:
-        0 7px 18px
-        rgba(31, 41, 55, 0.18);
-}
-
-
-/* =========================================================
-   10. TEXT INPUTS
-   ========================================================= */
-
-.stTextInput input,
-.stTextArea textarea {
-
-    border-radius:
-        10px !important;
-
-    border:
-        1px solid #DDE1E7 !important;
-
-    background:
-        #FFFFFF !important;
-
-    color:
-        #111827 !important;
-}
-
-
-.stTextInput input:focus,
-.stTextArea textarea:focus {
-
-    border-color:
-        #9CA3AF !important;
-
-    box-shadow:
-        0 0 0 2px
-        rgba(107, 114, 128, 0.10) !important;
-}
-
-
-/* =========================================================
-   11. SELECTBOX
-   ========================================================= */
-
-.stSelectbox div[data-baseweb="select"] {
-
-    border-radius:
-        10px !important;
-
-    background:
-        #FFFFFF !important;
-}
-
-
-/* =========================================================
-   12. METRICS
-   ========================================================= */
-
-div[data-testid="stMetric"] {
-
-    background:
-        rgba(255, 255, 255, 0.92);
-
-    border:
-        1px solid #E4E7EC;
-
-    border-radius:
-        14px;
-
-    padding:
-        16px 18px;
-
-    box-shadow:
-        0 4px 15px
-        rgba(20, 25, 40, 0.035);
-
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
-}
-
-
-div[data-testid="stMetric"]:hover {
-
-    transform:
-        translateY(-2px);
-
-    box-shadow:
-        0 8px 22px
-        rgba(20, 25, 40, 0.07);
-}
-
-
-/* =========================================================
-   13. EXPANDERS
-   ========================================================= */
-
-div[data-testid="stExpander"] {
-
-    border:
-        1px solid #E1E4E8 !important;
-
-    border-radius:
-        12px !important;
-
-    background:
-        #FFFFFF !important;
-
-    overflow:
-        hidden;
-}
-
-
-div[data-testid="stExpander"] summary:hover {
-
-    background:
-        #F3F4F6 !important;
-}
-
-
-/* =========================================================
-   14. FILE UPLOADER
-   ========================================================= */
-
-section[data-testid="stFileUploaderDropzone"] {
-
-    border:
-        1px dashed #C7CBD3 !important;
-
-    border-radius:
-        14px !important;
-
-    background:
-        #FAFAFB !important;
-}
-
-
-section[data-testid="stFileUploaderDropzone"]:hover {
-
-    border-color:
-        #9CA3AF !important;
-
-    background:
-        #F5F6F7 !important;
-}
-
-
-/* =========================================================
-   15. ALERTS
-   ========================================================= */
-
-div[data-testid="stAlert"] {
-
-    border-radius:
-        12px !important;
-}
-
-
-/* =========================================================
-   16. DIVIDERS
-   ========================================================= */
-
-hr {
-
-    border:
-        none !important;
-
-    border-top:
-        1px solid #E1E4E8 !important;
-
-    margin:
-        1.5rem 0;
-}
-
-
-/* =========================================================
-   17. PLOTLY
-   ========================================================= */
-
-.js-plotly-plot {
-
-    border-radius:
-        14px;
-
-    overflow:
-        hidden;
-}
-
-
-/* =========================================================
-   18. MOBILE
-   ========================================================= */
-
-@media (max-width: 768px) {
-
-    .main .block-container {
-
-        padding-left:
-            1rem;
-
-        padding-right:
-            1rem;
-
-        padding-top:
-            1.5rem;
-    }
-
-
-    h1 {
-
-        font-size:
-            1.8rem !important;
-    }
-}
-
-</style>
-""", unsafe_allow_html=True)
 # =========================================================
-# FORM SUBMIT BUTTON — DECISCOPE
+# FORM SUBMIT BUTTON - DECISCOPE
 # =========================================================
 
-st.markdown("""
-<style>
-
-/* Analyze Decision / all form submit buttons */
-div[data-testid="stFormSubmitButton"] > button {
-    background-color: #E5E7EB !important;
-    color: #111827 !important;
-    border: 1px solid #D1D5DB !important;
-    border-radius: 10px !important;
-    font-weight: 600 !important;
-    min-height: 44px !important;
-    transition: all 0.2s ease !important;
-}
-
-/* Hover */
-div[data-testid="stFormSubmitButton"] > button:hover {
-    background-color: #D1D5DB !important;
-    color: #111827 !important;
-    border-color: #9CA3AF !important;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
-
-/* Click */
-div[data-testid="stFormSubmitButton"] > button:active {
-    background-color: #CBD5E1 !important;
-    transform: translateY(0);
-}
-
-/* Button text */
-div[data-testid="stFormSubmitButton"] > button p {
-    color: #111827 !important;
-    font-weight: 600 !important;
-}
-
-/* Disabled state */
-div[data-testid="stFormSubmitButton"] > button:disabled {
-    background-color: #E5E7EB !important;
-    color: #6B7280 !important;
-    opacity: 1 !important;
-}
-
-div[data-testid="stFormSubmitButton"] > button:disabled p {
-    color: #6B7280 !important;
-}
-
-</style>
-""", unsafe_allow_html=True)
-st.markdown("""
-<style>
-
-button[kind="secondary"] {
-    background: #E5E7EB !important;
-    color: #374151 !important;
-    border: 1px solid #D1D5DB !important;
-}
-
-button[kind="secondary"]:hover {
-    background: #D1D5DB !important;
-    color: #111827 !important;
-}
-
-</style>
-""", unsafe_allow_html=True)
 # ==========================================
 # SIDEBAR NAVIGATION
 # ==========================================
@@ -781,7 +84,14 @@ with st.sidebar:
     # BRAND
     # ------------------------------------------
 
-    st.markdown("## DeciScope")
+    brand_logo, brand_text = st.columns([0.22, 0.78], vertical_alignment="center")
+
+    with brand_logo:
+        if LOGO_PATH.exists():
+            st.image(str(LOGO_PATH), width=38)
+
+    with brand_text:
+        st.markdown("## DeciScope")
 
     st.caption(
         "Decision intelligence workspace"
@@ -820,7 +130,7 @@ with st.sidebar:
             "Evidence",
             "Analysis",
             "Scenarios",
-            "Decision Brief"
+            "Intelligence Report"
         ],
         label_visibility="collapsed"
     )
@@ -842,7 +152,7 @@ with st.sidebar:
         if st.session_state.analysis_complete:
 
             st.success(
-                "✓ Analysis ready"
+                "Complete - Analysis ready"
             )
 
         else:
@@ -870,13 +180,13 @@ with st.sidebar:
     # Activity data
     if st.session_state.uploaded_data is not None:
 
-        st.write("✓ Activity data")
+        st.write("Complete - Activity data")
 
         evidence_count += 1
 
     else:
 
-        st.caption("○ Activity data")
+        st.caption("Open - Activity data")
 
     # Visual evidence
     if (
@@ -887,24 +197,24 @@ with st.sidebar:
         st.session_state.get("vision_data") is not None
     ):
 
-        st.write("✓ Visual evidence")
+        st.write("Complete - Visual evidence")
 
         evidence_count += 1
 
     else:
 
-        st.caption("○ Visual evidence")
+        st.caption("Open - Visual evidence")
 
     # Voice evidence
     if st.session_state.get("voice_input") is not None:
 
-        st.write("✓ Voice context")
+        st.write("Complete - Voice context")
 
         evidence_count += 1
 
     else:
 
-        st.caption("○ Voice context")
+        st.caption("Open - Voice context")
 
     st.caption(
         f"{evidence_count} evidence source"
@@ -952,46 +262,46 @@ with st.sidebar:
 
     # 01 Decision
     if st.session_state.decision_question:
-        st.write("✓ 01  Decision")
+        st.write("Complete - 01 Decision")
     else:
-        st.caption("○ 01  Decision")
+        st.caption("Open - 01 Decision")
 
 
     # 02 Evidence
     if evidence_count > 0:
-        st.write("✓ 02  Evidence")
+        st.write("Complete - 02 Evidence")
     else:
-        st.caption("○ 02  Evidence")
+        st.caption("Open - 02 Evidence")
 
 
     # 03 Analysis
     if st.session_state.analysis_complete:
-        st.write("✓ 03  Analysis")
+        st.write("Complete - 03 Analysis")
     else:
-        st.caption("○ 03  Analysis")
+        st.caption("Open - 03 Analysis")
 
 
     # 04 Scenarios
     if st.session_state.scenario_used:
-        st.write("✓ 04  Scenarios")
+        st.write("Complete - 04 Scenarios")
     elif st.session_state.analysis_complete:
-        st.info("→ 04  Scenarios")
+        st.info("Current - 04 Scenarios")
     else:
-        st.caption("○ 04  Scenarios")
+        st.caption("Locked - 04 Scenarios")
 
 
-    # 05 Decision Brief
+    # 05 Intelligence Report
     if st.session_state.brief_viewed:
-        st.write("✓ 05  Decision Brief")
+        st.write("Complete - 05 Intelligence Report")
     elif st.session_state.analysis_complete:
-        st.info("→ 05  Decision Brief")
+        st.info("Current - 05 Intelligence Report")
     else:
-        st.caption("○ 05  Decision Brief")
+        st.caption("Locked - 05 Intelligence Report")
         
     st.divider()
 
     if st.button(
-        "↻  Start New Decision",
+        "Start New Decision",
         use_container_width=True
     ):
         # Decision
@@ -1017,7 +327,7 @@ with st.sidebar:
         # Scenarios
         st.session_state.scenario_used = False
 
-        # Decision Brief
+        # Intelligence Report
         st.session_state.brief_viewed = False
 
         # Reset scenario sliders
@@ -1038,17 +348,29 @@ with st.sidebar:
     # ------------------------------------------
 
     st.caption(
-        "DeciScope • Evidence-based decisions"
+        "DeciScope - Evidence-based decisions"
     )
 # -----------------------------
 # Header
 # -----------------------------
 
-st.title("DeciScope")
+header_logo, header_text = st.columns([0.07, 0.93], vertical_alignment="center")
 
-st.caption(
-    "Decision intelligence for choices that actually matter."
-)
+with header_logo:
+    if LOGO_PATH.exists():
+        st.image(str(LOGO_PATH), width=48)
+
+with header_text:
+    st.title("DeciScope")
+
+    st.caption(
+        "Decision intelligence for choices that actually matter."
+    )
+
+    st.markdown(
+        '<div class="ds-status-pill"><span></span>Decision workspace</div>',
+        unsafe_allow_html=True
+    )
 
 
 
@@ -1060,16 +382,16 @@ st.caption(
 st.divider()
 
 # =========================================================
-# 01 · DECISION
+# 01 - DECISION
 # =========================================================
 
 # =========================================================
-# 01 · DECISION COCKPIT
+# 01 - DECISION COCKPIT
 # =========================================================
 
 if page == "Decision":
 
-    st.caption("01 / 05  •  DECISION COCKPIT")
+    st.caption("01 / 05 - DECISION COCKPIT")
 
     st.title("Make the decision clear.")
 
@@ -1120,7 +442,7 @@ if page == "Decision":
             st.write("")
 
             submitted = st.form_submit_button(
-                "Create Decision →",
+                "Create Decision",
                 use_container_width=True
             )
 
@@ -1168,7 +490,7 @@ if page == "Decision":
         )
 
         st.caption(
-            f"Primary goal · "
+            f"Primary goal - "
             f"{st.session_state.decision_goal}"
         )
 
@@ -1245,15 +567,15 @@ if page == "Decision":
 
             st.success(
                 "Decision analysis is ready. "
-                "Review your Decision Brief."
+                "Review your Intelligence Report."
             )
 # =========================================================
-# 02 · EVIDENCE FIELD
+# 02 - EVIDENCE FIELD
 # =========================================================
 
 if page == "Evidence":
 
-    st.caption("02 / 05  •  EVIDENCE FIELD")
+    st.caption("02 / 05 - EVIDENCE FIELD")
 
     st.title("Build the evidence.")
 
@@ -1285,7 +607,7 @@ if page == "Evidence":
     # ACTIVITY DATA
     # =====================================================
 
-    st.caption("01  ·  ACTIVITY DATA")
+    st.caption("01 - ACTIVITY DATA")
 
     with st.container(border=True):
 
@@ -1448,7 +770,7 @@ if page == "Evidence":
 
     with context_col:
 
-        st.caption("02  ·  CONTEXT")
+        st.caption("02 - CONTEXT")
 
         with st.container(border=True):
 
@@ -1484,7 +806,7 @@ if page == "Evidence":
 
     with visual_col:
 
-        st.caption("03  ·  VISUAL EVIDENCE")
+        st.caption("03 - VISUAL EVIDENCE")
 
         with st.container(border=True):
 
@@ -1521,8 +843,6 @@ if page == "Evidence":
 
                     st.session_state.uploaded_image = uploaded_image
                     st.session_state.camera_image = None
-
-                    
                     st.success("Visual evidence added")
 
             else:
@@ -1536,35 +856,26 @@ if page == "Evidence":
 
                     st.session_state.camera_image = camera_image
                     st.session_state.uploaded_image = None
+                    st.success("Camera evidence added")
 
-                    # =========================================================
-# DISPLAY SAVED VISUAL EVIDENCE
-# =========================================================
+            saved_image = (
+                st.session_state.get("uploaded_image")
+                or
+                st.session_state.get("camera_image")
+            )
 
-                    saved_image = (
-                        st.session_state.get("uploaded_image")
-                        or
-                        st.session_state.get("camera_image")
-                    )
+            if saved_image is not None:
 
-                    if saved_image is not None:
-
-                        st.divider()
-
-                        st.caption("ADDED VISUAL EVIDENCE")
-
-                        
-                        st.success(
-                            "Visual evidence is ready for analysis."
-                        )
-
-                        st.write("")
+                st.divider()
+                st.caption("ADDED VISUAL EVIDENCE")
+                st.image(saved_image, use_container_width=True)
+                st.success("Visual evidence is ready for analysis.")
 
     # =====================================================
     # VOICE CONTEXT
     # =====================================================
 
-    st.caption("04  ·  VOICE CONTEXT")
+    st.caption("04 - VOICE CONTEXT")
 
     with st.container(border=True):
 
@@ -1612,12 +923,12 @@ if page == "Evidence":
         )
     
 # =========================================================
-# 03 · ANALYSIS — AI INTELLIGENCE LAB
+# 03 - ANALYSIS - AI INTELLIGENCE LAB
 # =========================================================
 
 if page == "Analysis":
 
-    st.caption("03 · INTELLIGENCE LAB")
+    st.caption("03 - INTELLIGENCE LAB")
     st.title("Decision Analysis")
 
     st.caption(
@@ -1650,7 +961,7 @@ if page == "Analysis":
         )
 
         st.caption(
-            f"Primary objective · {st.session_state.decision_goal}"
+            f"Primary objective - {st.session_state.decision_goal}"
         )
 
     st.write("")
@@ -1890,7 +1201,7 @@ if page == "Analysis":
                         for item in visual_evidence:
 
                             st.markdown(
-                                f"✓ {item}"
+                                f"- {item}"
                             )
 
                     else:
@@ -1926,7 +1237,7 @@ if page == "Analysis":
                     for item in benefits:
 
                         st.markdown(
-                            f"✓ {item}"
+                            f"- {item}"
                         )
 
                 else:
@@ -1951,7 +1262,7 @@ if page == "Analysis":
                     for item in risks:
 
                         st.markdown(
-                            f"⚠ {item}"
+                            f"Risk: {item}"
                         )
 
                 else:
@@ -1984,7 +1295,7 @@ if page == "Analysis":
                     for item in constraints:
 
                         st.write(
-                            "•",
+                            "-",
                             item
                         )
 
@@ -2010,7 +1321,7 @@ if page == "Analysis":
                     for item in missing:
 
                         st.write(
-                            "•",
+                            "-",
                             item
                         )
 
@@ -2042,7 +1353,7 @@ if page == "Analysis":
                 for item in changers:
 
                     st.markdown(
-                        f"→ {item}"
+                        f"- {item}"
                     )
 
             else:
@@ -2065,19 +1376,19 @@ if page == "Analysis":
 
             st.caption(
                 "Use Scenarios to test alternative conditions, "
-                "or open Decision Brief for the final recommendation."
+                "or open Intelligence Report for the final recommendation."
             )
 
             st.info(
-                "Next → **Scenarios** or **Decision Brief**"
+                "Next: **Scenarios** or **Intelligence Report**"
             )
 # =========================================================
-# 05 · INTELLIGENCE REPORT
+# 05 - INTELLIGENCE REPORT
 # =========================================================
 
-if page == "Decision Brief":
+if page == "Intelligence Report":
 
-    st.caption("05 · INTELLIGENCE REPORT")
+    st.caption("05 - INTELLIGENCE REPORT")
     st.header("Intelligence Report")
 
     st.caption(
@@ -2143,7 +1454,7 @@ if page == "Decision Brief":
         )
 
         st.caption(
-            f"Primary objective · {decision_goal}"
+            f"Primary objective - {decision_goal}"
         )
 
         st.write("")
@@ -2326,7 +1637,7 @@ if page == "Decision Brief":
                 for item in evidence:
 
                     st.markdown(
-                        f"• {item}"
+                        f"- {item}"
                     )
 
             else:
@@ -2349,7 +1660,7 @@ if page == "Decision Brief":
                 for item in benefits:
 
                     st.markdown(
-                        f"• {item}"
+                        f"- {item}"
                     )
 
             else:
@@ -2382,7 +1693,7 @@ if page == "Decision Brief":
                 for item in risks:
 
                     st.markdown(
-                        f"• {item}"
+                        f"- {item}"
                     )
 
             else:
@@ -2405,7 +1716,7 @@ if page == "Decision Brief":
                 for item in constraints:
 
                     st.markdown(
-                        f"• {item}"
+                        f"- {item}"
                     )
 
             else:
@@ -2434,7 +1745,7 @@ if page == "Decision Brief":
                 for item in changers:
 
                     st.markdown(
-                        f"• {item}"
+                        f"- {item}"
                     )
 
             else:
@@ -2461,7 +1772,7 @@ if page == "Decision Brief":
                 for item in missing:
 
                     st.markdown(
-                        f"• {item}"
+                        f"- {item}"
                     )
 
             else:
@@ -2765,7 +2076,7 @@ if page == "Decision Brief":
 
                         story.append(
                             Paragraph(
-                                f"• {item}",
+                                f"- {item}",
                                 body_style
                             )
                         )
@@ -2831,7 +2142,7 @@ if page == "Decision Brief":
 
             story.append(
                 Paragraph(
-                    "Generated by DeciScope · Decision Intelligence Workspace",
+                    "Generated by DeciScope - Decision Intelligence Workspace",
                     body_style
                 )
             )
@@ -2861,19 +2172,19 @@ if page == "Decision Brief":
         pdf_file = build_pdf_report()
 
         st.download_button(
-            label="↓  Download Intelligence Report",
+            label="Download Intelligence Report",
             data=pdf_file,
             file_name="DeciScope_Intelligence_Report.pdf",
             mime="application/pdf",
             use_container_width=True
         )     
    # =========================================================
-# 04 · SCENARIOS — SCENARIO SIMULATOR
+# 04 - SCENARIOS - SCENARIO SIMULATOR
 # =========================================================
 
 if page == "Scenarios":
 
-    st.caption("04 · SCENARIO SIMULATOR")
+    st.caption("04 - SCENARIO SIMULATOR")
     st.title("What if things changed?")
 
     st.caption(
@@ -2901,7 +2212,7 @@ if page == "Scenarios":
             )
 
             st.info(
-                "Next → Open **Analysis** from the sidebar."
+                "Next: Open **Analysis** from the sidebar."
             )
 
         st.stop()
@@ -2967,7 +2278,7 @@ if page == "Scenarios":
                 "Current recommendation",
                 st.session_state.get(
                     "recommendation",
-                    "—"
+                    "-"
                 )
             )
 
@@ -2977,7 +2288,7 @@ if page == "Scenarios":
                 "Current risk",
                 st.session_state.get(
                     "risk_level",
-                    "—"
+                    "-"
                 )
             )
 
@@ -3234,7 +2545,7 @@ if page == "Scenarios":
             with factor_col2:
 
                 st.write(
-                    f"{original_value} → {scenario_value}"
+                    f"{original_value} -> {scenario_value}"
                 )
 
             with factor_col3:
@@ -3333,10 +2644,12 @@ if page == "Scenarios":
         st.markdown("### Ready to make the call?")
 
         st.caption(
-            "Review the final Decision Brief for the evidence-backed "
+            "Review the final Intelligence Report for the evidence-backed "
             "recommendation."
         )
 
         st.info(
-            "Next → **Decision Brief**"
+            "Next: **Intelligence Report**"
         )
+
+

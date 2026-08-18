@@ -1,0 +1,349 @@
+:root {
+    --ds-bg: #f6f3ed;
+    --ds-surface: #fffdf8;
+    --ds-surface-soft: #f8f6f1;
+    --ds-panel: #ffffff;
+    --ds-border: #ded8cd;
+    --ds-border-strong: #c8c0b4;
+    --ds-text: #1d1b18;
+    --ds-muted: #6e675e;
+    --ds-faint: #9b9388;
+    --ds-accent: #0f766e;
+    --ds-accent-dark: #115e59;
+    --ds-accent-soft: #dff4ef;
+    --ds-warning: #9f4f18;
+    --ds-shadow: 0 12px 38px rgba(44, 38, 30, 0.08);
+    --ds-shadow-soft: 0 6px 20px rgba(44, 38, 30, 0.06);
+}
+
+* {
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    letter-spacing: 0;
+}
+
+.stApp {
+    color: var(--ds-text);
+    background:
+        linear-gradient(rgba(29, 27, 24, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(29, 27, 24, 0.025) 1px, transparent 1px),
+        radial-gradient(circle at 82% 6%, rgba(15, 118, 110, 0.09), transparent 28rem),
+        radial-gradient(circle at 12% 88%, rgba(148, 130, 104, 0.10), transparent 30rem),
+        var(--ds-bg);
+    background-size: 28px 28px, 28px 28px, auto, auto, auto;
+}
+
+.deciscope-orb {
+    position: fixed;
+    border-radius: 999px;
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(86px);
+    opacity: 0.28;
+}
+
+.orb-one {
+    width: 300px;
+    height: 300px;
+    right: 3%;
+    top: 8%;
+    background: #0f766e;
+    animation: dsFloatOne 28s ease-in-out infinite;
+}
+
+.orb-two {
+    width: 260px;
+    height: 260px;
+    left: 8%;
+    bottom: 6%;
+    background: #b59f7d;
+    animation: dsFloatTwo 32s ease-in-out infinite;
+}
+
+.orb-three {
+    width: 210px;
+    height: 210px;
+    left: 50%;
+    top: 46%;
+    background: #94a3b8;
+    animation: dsFloatThree 36s ease-in-out infinite;
+}
+
+@keyframes dsFloatOne {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(-34px, 28px, 0); }
+}
+
+@keyframes dsFloatTwo {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(30px, -26px, 0); }
+}
+
+@keyframes dsFloatThree {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(-24px, 20px, 0); }
+}
+
+.main .block-container {
+    max-width: 1180px;
+    padding: 2.1rem 2.4rem 4rem;
+    position: relative;
+    z-index: 1;
+    animation: dsPageIn 260ms ease-out;
+}
+
+@keyframes dsPageIn {
+    from { opacity: 0; transform: translateY(7px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+h1, h2, h3 {
+    color: var(--ds-text) !important;
+    letter-spacing: 0 !important;
+}
+
+h1 {
+    font-size: 2.45rem !important;
+    line-height: 1.08 !important;
+    font-weight: 800 !important;
+}
+
+h2 {
+    font-weight: 750 !important;
+}
+
+h3 {
+    font-weight: 700 !important;
+}
+
+p, li, label, span {
+    color: var(--ds-text);
+}
+
+[data-testid="stCaptionContainer"] p {
+    color: var(--ds-muted) !important;
+    font-weight: 500;
+}
+
+section[data-testid="stSidebar"] {
+    background: #ebe6dc !important;
+    border-right: 1px solid var(--ds-border);
+}
+
+section[data-testid="stSidebar"] > div {
+    background:
+        linear-gradient(180deg, rgba(255,255,255,0.34), rgba(255,255,255,0)),
+        #ebe6dc !important;
+    padding: 1.35rem 1rem;
+}
+
+section[data-testid="stSidebar"] h2 {
+    font-size: 1.35rem !important;
+    font-weight: 800 !important;
+    margin-bottom: 0.1rem;
+}
+
+section[data-testid="stSidebar"] h3 {
+    color: var(--ds-muted) !important;
+    font-size: 0.74rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.08em !important;
+}
+
+section[data-testid="stSidebar"] [data-testid="stMetric"] {
+    background: rgba(255, 253, 248, 0.72);
+    box-shadow: none;
+}
+
+section[data-testid="stSidebar"] div[role="radiogroup"] label {
+    min-height: 42px;
+    margin: 4px 0 !important;
+    padding: 9px 10px !important;
+    border: 1px solid transparent !important;
+    border-radius: 8px !important;
+    background: transparent !important;
+    transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+section[data-testid="stSidebar"] div[role="radiogroup"] label:hover {
+    background: rgba(255, 253, 248, 0.62) !important;
+    border-color: rgba(200, 192, 180, 0.72) !important;
+}
+
+section[data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) {
+    background: var(--ds-surface) !important;
+    border-color: var(--ds-border-strong) !important;
+    box-shadow: 0 8px 20px rgba(44, 38, 30, 0.06);
+}
+
+section[data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) p {
+    color: var(--ds-text) !important;
+    font-weight: 700 !important;
+}
+
+section[data-testid="stSidebar"] div[role="radiogroup"] input {
+    accent-color: var(--ds-accent);
+}
+
+div[data-testid="stVerticalBlockBorderWrapper"] {
+    background: rgba(255, 253, 248, 0.92) !important;
+    border: 1px solid var(--ds-border) !important;
+    border-radius: 8px !important;
+    box-shadow: var(--ds-shadow-soft);
+    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+div[data-testid="stVerticalBlockBorderWrapper"]:hover {
+    border-color: var(--ds-border-strong) !important;
+    box-shadow: var(--ds-shadow);
+}
+
+div[data-testid="stMetric"] {
+    background: linear-gradient(180deg, #fffefb, #f8f6f1);
+    border: 1px solid var(--ds-border);
+    border-radius: 8px;
+    padding: 15px 16px;
+    box-shadow: 0 8px 24px rgba(44, 38, 30, 0.055);
+}
+
+div[data-testid="stMetricLabel"] p {
+    color: var(--ds-muted) !important;
+    font-size: 0.78rem !important;
+    font-weight: 650 !important;
+    text-transform: uppercase;
+}
+
+div[data-testid="stMetricValue"] {
+    color: var(--ds-text) !important;
+    font-weight: 800 !important;
+}
+
+.stButton > button,
+div[data-testid="stFormSubmitButton"] > button,
+.stDownloadButton > button {
+    min-height: 43px;
+    border-radius: 8px !important;
+    border: 1px solid var(--ds-border-strong) !important;
+    background: var(--ds-panel) !important;
+    color: var(--ds-text) !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 14px rgba(44, 38, 30, 0.045);
+    transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+
+.stButton > button:hover,
+div[data-testid="stFormSubmitButton"] > button:hover,
+.stDownloadButton > button:hover {
+    transform: translateY(-1px);
+    border-color: var(--ds-accent) !important;
+    box-shadow: 0 10px 22px rgba(15, 118, 110, 0.12);
+}
+
+.stButton > button[kind="primary"],
+div[data-testid="stFormSubmitButton"] > button[kind="primary"] {
+    background: var(--ds-accent) !important;
+    border-color: var(--ds-accent) !important;
+    color: #ffffff !important;
+}
+
+.stTextInput input,
+.stTextArea textarea,
+div[data-baseweb="select"] > div,
+.stDateInput input,
+.stNumberInput input {
+    border-radius: 8px !important;
+    border-color: var(--ds-border) !important;
+    background: #fffefb !important;
+    color: var(--ds-text) !important;
+}
+
+.stTextInput input:focus,
+.stTextArea textarea:focus,
+.stNumberInput input:focus {
+    border-color: var(--ds-accent) !important;
+    box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12) !important;
+}
+
+section[data-testid="stFileUploaderDropzone"] {
+    min-height: 118px;
+    border: 1.5px dashed var(--ds-border-strong) !important;
+    border-radius: 8px !important;
+    background:
+        linear-gradient(180deg, rgba(255, 253, 248, 0.82), rgba(248, 246, 241, 0.9)) !important;
+    transition: border-color 160ms ease, background 160ms ease;
+}
+
+section[data-testid="stFileUploaderDropzone"]:hover {
+    border-color: var(--ds-accent) !important;
+    background: var(--ds-accent-soft) !important;
+}
+
+div[data-testid="stCameraInput"] video,
+div[data-testid="stImage"] img {
+    border-radius: 8px;
+    border: 1px solid var(--ds-border);
+}
+
+div[data-testid="stDataFrame"],
+div[data-testid="stDataEditor"] {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--ds-border);
+}
+
+div[data-testid="stAlert"] {
+    border-radius: 8px !important;
+    border-color: var(--ds-border) !important;
+}
+
+div[data-testid="stExpander"] {
+    border: 1px solid var(--ds-border) !important;
+    border-radius: 8px !important;
+    background: var(--ds-surface) !important;
+    overflow: hidden;
+}
+
+div[data-testid="stExpander"] summary:hover {
+    background: var(--ds-surface-soft) !important;
+}
+
+.stSlider [data-baseweb="slider"] > div {
+    color: var(--ds-accent) !important;
+}
+
+.stProgress > div > div > div > div {
+    background-color: var(--ds-accent) !important;
+}
+
+.js-plotly-plot {
+    border: 1px solid var(--ds-border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--ds-panel);
+}
+
+hr {
+    border: 0 !important;
+    border-top: 1px solid var(--ds-border) !important;
+    margin: 1.45rem 0 !important;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+    outline: 3px solid rgba(15, 118, 110, 0.18) !important;
+    outline-offset: 2px !important;
+}
+
+@media (max-width: 768px) {
+    .main .block-container {
+        padding: 1.25rem 1rem 3rem;
+    }
+
+    h1 {
+        font-size: 1.9rem !important;
+    }
+
+    div[data-testid="stMetric"] {
+        padding: 12px;
+    }
+}
