@@ -55,6 +55,14 @@ load_css()
 initialize_session_state()
 st.session_state.setdefault("confirm_reset", False)
 
+PAGE_OPTIONS = [
+    "Decision",
+    "Evidence",
+    "Analysis",
+    "Scenarios",
+    "Intelligence Report",
+]
+
 
 def get_evidence_count():
     count = 0
@@ -184,13 +192,7 @@ with st.sidebar:
 
     page = st.radio(
         "Navigate",
-        [
-            "Decision",
-            "Evidence",
-            "Analysis",
-            "Scenarios",
-            "Intelligence Report"
-        ],
+        PAGE_OPTIONS,
         label_visibility="collapsed"
     )
 
@@ -999,6 +1001,7 @@ if page == "Analysis":
                     "Analyze Decision",
                     use_container_width=True
                 )
+                image = None
                 uploaded_image = st.session_state.get(
                     "uploaded_image"
                 )
@@ -1435,6 +1438,13 @@ if page == "Intelligence Report":
             "Not available"
         )
 
+        score_delta = None
+        if st.session_state.get("scenario_used"):
+            scenario_score = st.session_state.get("scenario_score")
+            original_score = st.session_state.get("decision_score")
+            if scenario_score is not None and original_score is not None:
+                score_delta = scenario_score - original_score
+
         decision_question = st.session_state.get(
             "decision_question",
             "Decision"
@@ -1476,7 +1486,8 @@ if page == "Intelligence Report":
 
             st.metric(
                 "Decision Score",
-                f"{score}/100"
+                f"{score}/100",
+                delta=score_delta
             )
 
         with col2:
@@ -2387,6 +2398,8 @@ if page == "Scenarios":
     score_difference = (
         scenario_score - original_score
     )
+    st.session_state.scenario_score = scenario_score
+    st.session_state.scenario_difference = score_difference
 
     # =========================================================
     # SCENARIO RESULT
