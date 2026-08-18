@@ -297,29 +297,13 @@ git clone https://github.com/Gawandeepkaur20/DeciScope.git
 cd DeciScope
 ```
 
-## 2. Create a Virtual Environment
-
-### Windows
-
-```bash
-python -m venv venv
-venv\Scripts\activate
-```
-
-### macOS / Linux
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
-## 3. Install Dependencies
+## 2. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## 4. Configure Gemini API
+## 3. Configure Gemini API
 
 Create the following file:
 
@@ -333,7 +317,7 @@ Add:
 GEMINI_API_KEY = "your_api_key_here"
 ```
 
-## 5. Start the Application
+## 4. Start the Application
 
 ```bash
 streamlit run app.py
