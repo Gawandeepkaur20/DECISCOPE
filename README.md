@@ -28,7 +28,7 @@ For the complete system architecture, data flow, modules, state management, and 
 
 👉 [View Architecture Documentation](docs/architecture.md)
 
-👉 [ Prompt Strategy](docs/prompt_strategy.md)
+👉 [ View Prompt Strategy Documentation ](docs/prompt_strategy.md)
 
 ---
 
