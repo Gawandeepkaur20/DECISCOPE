@@ -20,6 +20,13 @@ Instead of simply asking an AI for an answer, DeciScope guides the user through 
 
 Deployed using **Streamlit Community Cloud**.
 
+## 🏗️ System Architecture
+
+For the complete system architecture, data flow, modules, state management, and deployment architecture:
+
+👉 [View Architecture Documentation](docs/architecture.md)
+
+
 ---
 
 ## ✨ Features
@@ -157,12 +164,6 @@ Current visualizations include:
 The application uses **Pandas** for data processing and **Plotly** for interactive visualization.
 
 ---
-
-## 🏗️ System Architecture
-
-For the complete system architecture, data flow, modules, state management, and deployment architecture:
-
-👉 [View Architecture Documentation](docs/architecture.md)
 
 # 🛠️ Technology Stack
 
