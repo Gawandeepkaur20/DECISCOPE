@@ -20,12 +20,15 @@ Instead of simply asking an AI for an answer, DeciScope guides the user through 
 
 Deployed using **Streamlit Community Cloud**.
 
-## 🏗️ System Architecture
+ ---
+
+## 🏗️ System Architecture and Prompt Strategy
 
 For the complete system architecture, data flow, modules, state management, and deployment architecture:
 
 👉 [View Architecture Documentation](docs/architecture.md)
 
+👉 [ Prompt Strategy](docs/prompt_strategy.md)
 
 ---
 
