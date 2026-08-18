@@ -53,11 +53,62 @@ load_css()
 
 
 initialize_session_state()
-if "scenario_used" not in st.session_state:
-    st.session_state.scenario_used = False
+st.session_state.setdefault("confirm_reset", False)
 
-if "brief_viewed" not in st.session_state:
-    st.session_state.brief_viewed = False
+
+def get_evidence_count():
+    count = 0
+    if st.session_state.get("uploaded_data") is not None:
+        count += 1
+    if (
+        st.session_state.get("uploaded_image") is not None
+        or st.session_state.get("camera_image") is not None
+        or st.session_state.get("vision_data") is not None
+    ):
+        count += 1
+    if (
+        st.session_state.get("voice_input") is not None
+        or bool(str(st.session_state.get("voice_context", "")).strip())
+    ):
+        count += 1
+    if bool(str(st.session_state.get("user_context", "")).strip()):
+        count += 1
+    return count
+
+
+def reset_decision_state():
+    keys_to_reset = [
+        "decision_question",
+        "decision_goal",
+        "uploaded_data",
+        "uploaded_image",
+        "camera_image",
+        "voice_input",
+        "voice_context",
+        "user_context",
+        "vision_data",
+        "analysis_result",
+        "analysis_complete",
+        "decision_factors",
+        "decision_score",
+        "recommendation",
+        "risk_level",
+        "scenario_score",
+        "scenario_difference",
+        "scenario_type",
+        "scenario_history",
+        "scenario_used",
+        "brief_viewed",
+        "uploaded_image",
+        "camera_image",
+        "current_page"
+    ]
+    for key in keys_to_reset:
+        st.session_state.pop(key, None)
+    initialize_session_state()
+    st.session_state.setdefault("current_page", "Decision")
+
+
 # =========================================================
 # DECISCOPE FINAL UI THEME
 # =========================================================
@@ -84,18 +135,35 @@ with st.sidebar:
     # BRAND
     # ------------------------------------------
 
-    brand_logo, brand_text = st.columns([0.22, 0.78], vertical_alignment="center")
+    # Brand header
+    brand_logo, brand_text = st.columns(
+        [0.20, 0.82],
+        vertical_alignment="center"
+    )
 
     with brand_logo:
         if LOGO_PATH.exists():
-            st.image(str(LOGO_PATH), width=38)
+            st.image(str(LOGO_PATH), width=42)
 
     with brand_text:
-        st.markdown("## DeciScope")
+        st.markdown(
+            """
+            <div style="
+                font-size: 26px;
+                font-weight: 700;
+                color: #111827;
+                line-height: 42px;
+                margin-bottom: 12px; 
+                margin: 0;
+                padding: 0;
+            ">
+                DeciScope
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
-    st.caption(
-        "Decision intelligence workspace"
-    )
+    st.caption("Decision intelligence workspace")
 
     st.divider()
 
@@ -109,19 +177,10 @@ with st.sidebar:
 # WORKSPACE NAVIGATION
 # =========================================================
 
-    completed_decision = bool(
-        st.session_state.decision_question
-    )
-
-    completed_evidence = bool(
-        st.session_state.uploaded_data is not None
-        or st.session_state.vision_data is not None
-        or st.session_state.voice_context
-    )
-
-    completed_analysis = bool(
-        st.session_state.analysis_complete
-    )
+    completed_decision = bool(st.session_state.get("decision_question", ""))
+    evidence_count = get_evidence_count()
+    completed_evidence = evidence_count > 0
+    completed_analysis = bool(st.session_state.get("analysis_complete", False))
 
     page = st.radio(
         "Navigate",
@@ -134,7 +193,7 @@ with st.sidebar:
         ],
         label_visibility="collapsed"
     )
-    
+
     st.divider()
 
     # ------------------------------------------
@@ -175,45 +234,28 @@ with st.sidebar:
 
     st.markdown("### EVIDENCE")
 
-    evidence_count = 0
+    evidence_count = get_evidence_count()
 
-    # Activity data
-    if st.session_state.uploaded_data is not None:
-
+    if st.session_state.get("uploaded_data") is not None:
         st.write("Complete - Activity data")
-
-        evidence_count += 1
-
     else:
-
         st.caption("Open - Activity data")
 
-    # Visual evidence
     if (
         st.session_state.get("uploaded_image") is not None
-        or
-        st.session_state.get("camera_image") is not None
-        or
-        st.session_state.get("vision_data") is not None
+        or st.session_state.get("camera_image") is not None
+        or st.session_state.get("vision_data") is not None
     ):
-
         st.write("Complete - Visual evidence")
-
-        evidence_count += 1
-
     else:
-
         st.caption("Open - Visual evidence")
 
-    # Voice evidence
-    if st.session_state.get("voice_input") is not None:
-
+    if (
+        st.session_state.get("voice_input") is not None
+        or bool(str(st.session_state.get("voice_context", "")).strip())
+    ):
         st.write("Complete - Voice context")
-
-        evidence_count += 1
-
     else:
-
         st.caption("Open - Voice context")
 
     st.caption(
@@ -261,88 +303,53 @@ with st.sidebar:
     st.markdown("### WORKFLOW")
 
     # 01 Decision
-    if st.session_state.decision_question:
+    if st.session_state.get("decision_question"):
         st.write("Complete - 01 Decision")
     else:
         st.caption("Open - 01 Decision")
 
-
-    # 02 Evidence
     if evidence_count > 0:
         st.write("Complete - 02 Evidence")
     else:
         st.caption("Open - 02 Evidence")
 
-
-    # 03 Analysis
-    if st.session_state.analysis_complete:
+    if st.session_state.get("analysis_complete"):
         st.write("Complete - 03 Analysis")
     else:
         st.caption("Open - 03 Analysis")
 
-
-    # 04 Scenarios
-    if st.session_state.scenario_used:
+    if st.session_state.get("scenario_used"):
         st.write("Complete - 04 Scenarios")
-    elif st.session_state.analysis_complete:
+    elif st.session_state.get("analysis_complete"):
         st.info("Current - 04 Scenarios")
     else:
         st.caption("Locked - 04 Scenarios")
 
-
-    # 05 Intelligence Report
-    if st.session_state.brief_viewed:
+    if st.session_state.get("brief_viewed"):
         st.write("Complete - 05 Intelligence Report")
-    elif st.session_state.analysis_complete:
+    elif st.session_state.get("analysis_complete"):
         st.info("Current - 05 Intelligence Report")
     else:
         st.caption("Locked - 05 Intelligence Report")
-        
+
     st.divider()
 
-    if st.button(
-        "Start New Decision",
-        use_container_width=True
-    ):
-        # Decision
-        st.session_state.decision_question = ""
-        st.session_state.decision_goal = ""
+    if st.button("Reset Decision", use_container_width=True, key="reset_decision_prompt"):
+        st.session_state.confirm_reset = True
 
-        # Evidence
-        st.session_state.uploaded_data = None
-        st.session_state.user_context = ""
-        st.session_state.uploaded_image = None
-        st.session_state.camera_image = None
-        st.session_state.voice_input = None
-        st.session_state.vision_data = None
-
-        # Analysis
-        st.session_state.analysis_result = None
-        st.session_state.analysis_complete = False
-        st.session_state.decision_factors = {}
-        st.session_state.decision_score = None
-        st.session_state.recommendation = None
-        st.session_state.risk_level = None
-
-        # Scenarios
-        st.session_state.scenario_used = False
-
-        # Intelligence Report
-        st.session_state.brief_viewed = False
-
-        # Reset scenario sliders
-        for key in [
-            "scenario_career_value",
-            "scenario_skill_alignment",
-            "scenario_networking_value",
-            "scenario_time_fit",
-            "scenario_deadline_safety"
-        ]:
-            st.session_state.pop(key, None)
-
-        st.success("Ready for a new decision.")
-
-        st.rerun()   
+    if st.session_state.get("confirm_reset"):
+        st.warning("This will clear all decision-specific data and return to step 01.")
+        reset_col, cancel_col = st.columns(2)
+        with reset_col:
+            if st.button("Confirm Reset", use_container_width=True, key="confirm_reset_action"):
+                reset_decision_state()
+                st.session_state.confirm_reset = False
+                st.success("Ready for a new decision.")
+                st.rerun()
+        with cancel_col:
+            if st.button("Cancel", use_container_width=True, key="cancel_reset_action"):
+                st.session_state.confirm_reset = False
+                st.rerun()
     # ------------------------------------------
     # FOOTER
     # ------------------------------------------
@@ -368,10 +375,9 @@ with header_text:
     )
 
     st.markdown(
-        '<div class="ds-status-pill"><span></span>Decision workspace</div>',
+        '<div class="ds-workspace-pill"><span class="ds-pill-dot"></span>Decision workspace</div>',
         unsafe_allow_html=True
     )
-
 
 
 
@@ -469,10 +475,13 @@ if page == "Decision":
             )
 
             st.session_state.analysis_complete = False
+        st.session_state.scenario_used = False
+        st.session_state.brief_viewed = False
+        st.session_state.confirm_reset = False
 
-            st.success(
-                "Decision created. Continue to Evidence."
-            )
+        st.success(
+            "Decision created. Continue to Evidence."
+        )
 
     # =====================================================
     # DECISION STATUS
@@ -865,11 +874,13 @@ if page == "Evidence":
             )
 
             if saved_image is not None:
-
                 st.divider()
                 st.caption("ADDED VISUAL EVIDENCE")
                 st.image(saved_image, use_container_width=True)
                 st.success("Visual evidence is ready for analysis.")
+
+            st.session_state.setdefault("uploaded_image", None)
+            st.session_state.setdefault("camera_image", None)
 
     # =====================================================
     # VOICE CONTEXT
@@ -985,14 +996,9 @@ if page == "Analysis":
             with st.form("ai_analysis_form"):
 
                 analyze_clicked = st.form_submit_button(
-            "Analyze Decision",
-            use_container_width=True
-        )
-
-            if analyze_clicked:
-
-                image = None
-
+                    "Analyze Decision",
+                    use_container_width=True
+                )
                 uploaded_image = st.session_state.get(
                     "uploaded_image"
                 )
@@ -1166,7 +1172,7 @@ if page == "Analysis":
 
         vision_data = st.session_state.get(
             "vision_data"
-        )
+        ) or st.session_state.get("uploaded_image") or st.session_state.get("camera_image")
 
         if vision_data is not None:
 
@@ -1395,6 +1401,7 @@ if page == "Intelligence Report":
         "A decision-ready summary generated from the evidence analyzed by DeciScope."
     )
     st.session_state.brief_viewed = True
+    st.session_state["brief_viewed"] = True
     # ---------------------------------------------------------
     # CHECK ANALYSIS
     # ---------------------------------------------------------
@@ -2177,7 +2184,7 @@ if page == "Intelligence Report":
             file_name="DeciScope_Intelligence_Report.pdf",
             mime="application/pdf",
             use_container_width=True
-        )     
+        )
    # =========================================================
 # 04 - SCENARIOS - SCENARIO SIMULATOR
 # =========================================================

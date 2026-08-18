@@ -10,9 +10,12 @@ def initialize_session_state():
         "decision_question": "",
         "decision_goal": "",
         "uploaded_image": None,
-    "camera_image": None,
-    "voice_input": None,
-    "user_context": "",
+        "camera_image": None,
+        "voice_input": None,
+        "user_context": "",
+        "scenario_used": False,
+        "brief_viewed": False,
+
         # -----------------------------
         # Evidence
         # -----------------------------
@@ -32,7 +35,7 @@ def initialize_session_state():
         "decision_score": None,
         "recommendation": None,
         "risk_level": None,
-        "decision_factors": None,
+        "decision_factors": {},
 
         # -----------------------------
         # What-If Simulator
@@ -44,6 +47,6 @@ def initialize_session_state():
     }
 
     for key, value in defaults.items():
+        st.session_state.setdefault(key, value)
 
-        if key not in st.session_state:
-            st.session_state[key] = value
+    st.session_state.setdefault("confirm_reset", False)
