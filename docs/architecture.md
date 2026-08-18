@@ -1,373 +1,597 @@
-# 🏗️ DeciScope — System Architecture
+# 🏗️ DeciScope — System Architecture & Technical Design
 
-## Overview
+DeciScope is a multimodal AI-powered decision intelligence application built with Streamlit, Pandas, Plotly, and Google Gemini.
 
-DeciScope follows a modular architecture where the user moves through a structured decision workflow:
-
-**Decision → Evidence → Analysis → Scenarios → Intelligence Report**
-
-The application combines Streamlit UI components, Pandas-based data processing, and Gemini multimodal AI to transform different types of evidence into structured decision insights.
+The system collects a user's decision, supporting evidence, workload data, visual evidence, and contextual information, then uses structured analysis to generate decision insights, risk assessment, recommendations, scenarios, and a downloadable intelligence report.
 
 ---
 
-## System Architecture Diagram
+# 1. System Architecture
 
 ```mermaid
 flowchart TD
 
-    U([👤 User])
+    U([User])
 
-    U --> UI[🖥️ Streamlit User Interface]
+    U --> UI[Streamlit User Interface]
 
     UI --> D[01 · Decision]
     UI --> E[02 · Evidence]
-    UI --> A[03 · Analysis]
-    UI --> S[04 · Scenarios]
-    UI --> R[05 · Intelligence Report]
 
-    %% Decision
     D --> DC[Decision Question]
-    D --> DG[Primary Goal]
+    D --> GOAL[Primary Goal]
 
-    %% Evidence
-    E --> T[📝 Text Context]
-    E --> CSV[📊 CSV Activity Data]
-    E --> IMG[🖼️ Image Upload]
-    E --> CAM[📷 Camera Input]
-    E --> AUD[🎙️ Voice Input]
+    E --> TXT[Additional Context]
+    E --> CSV[Activity CSV]
+    E --> IMG[Image Evidence]
+    E --> CAM[Camera Evidence]
+    E --> VOICE[Voice Evidence]
 
-    %% Data Processing
-    CSV --> P[Pandas Data Pipeline]
-    P --> DF[Processed DataFrame]
-    DF --> V[📈 Plotly Visualizations]
+    CSV --> PD[Pandas Data Processing]
+    PD --> MET[Activity Metrics]
+    PD --> CHART[Plotly Visualizations]
 
-    %% Multimodal AI
-    T --> G[🤖 Gemini AI Engine]
-    IMG --> G
-    CAM --> G
-    AUD --> G
-    DC --> G
-    DG --> G
-    DF --> G
+    TXT --> AI[Gemini AI Engine]
+    IMG --> AI
+    CAM --> AI
+    VOICE --> AI
+    MET --> AI
+    DC --> AI
+    GOAL --> AI
 
-    %% Analysis
-    G --> F[Decision Factors]
+    AI --> ANA[03 · Analysis]
 
-    F --> CV[Career Value]
-    F --> SA[Skill Alignment]
-    F --> NV[Networking Value]
-    F --> TF[Time Fit]
-    F --> DS[Deadline Safety]
+    ANA --> FACTORS[Decision Factors]
+    FACTORS --> SCORE[Decision Score]
+    FACTORS --> RISK[Risk Assessment]
+    FACTORS --> REC[Recommendation]
 
-    CV --> SCORE[📊 Decision Score]
-    SA --> SCORE
-    NV --> SCORE
-    TF --> SCORE
-    DS --> SCORE
+    ANA --> S[04 · Scenarios]
 
-    SCORE --> REC[Recommendation]
-    SCORE --> RISK[Risk Level]
+    S --> PARAM[Scenario Parameters]
+    PARAM --> SC[Scenario Analysis]
+    SC --> COMP[Scenario Comparison]
 
-    %% Scenarios
-    SCORE --> S
-    S --> WHATIF[What-If Parameters]
-    WHATIF --> SS[Scenario Score]
-    SS --> COMP[Scenario Comparison]
-
-    %% Report
-    SCORE --> R
-    REC --> R
+    SCORE --> R[05 · Decision Brief]
     RISK --> R
+    REC --> R
+    SC --> R
     COMP --> R
-    V --> R
+    CHART --> R
 
-    R --> REPORT[📑 Intelligence Report]
-    REPORT --> DOWNLOAD[⬇️ Download Report]
+    R --> REPORT[Intelligence Report]
+    REPORT --> DOWNLOAD[Download Report]
 ```
 
 ---
 
-# 🔄 Application Data Flow
+# 2. Application Workflow
 
-## 1. Decision Input
-
-The user first defines the decision they want to evaluate.
+DeciScope follows a five-stage decision workflow:
 
 ```text
-User
- ↓
-Decision Question
- ↓
-Primary Goal
- ↓
+01 · Decision
+      ↓
+02 · Evidence
+      ↓
+03 · Analysis
+      ↓
+04 · Scenarios
+      ↓
+05 · Decision Brief
+```
+
+### Stage 01 — Decision
+
+The user defines:
+
+- Decision question
+- Primary decision goal
+
+The information is stored using Streamlit session state and becomes the foundation for the remaining analysis.
+
+### Stage 02 — Evidence
+
+The user can provide supporting evidence through:
+
+- Additional text context
+- CSV activity data
+- Image upload
+- Camera input
+- Voice input
+
+### Stage 03 — Analysis
+
+The collected decision context and evidence are processed and passed to the AI analysis pipeline.
+
+The application generates decision factors, scoring, risk assessment, and recommendations.
+
+### Stage 04 — Scenarios
+
+Users can explore alternative conditions and compare how changing assumptions can affect the decision.
+
+### Stage 05 — Decision Brief
+
+The final information is presented as an intelligence report that summarizes the decision, analysis, scenarios, risks, and recommendation.
+
+---
+
+# 3. Data Flow
+
+The overall data flow is:
+
+```text
+User Input
+    ↓
 Decision Context
+    ↓
+Evidence Collection
+    ↓
+Streamlit Session State
+    ↓
+Data Processing
+    ↓
+Gemini Analysis
+    ↓
+Decision Factors
+    ↓
+Score + Risk + Recommendation
+    ↓
+Scenario Analysis
+    ↓
+Decision Brief
+    ↓
+Intelligence Report
 ```
-
-The information is stored using Streamlit's `st.session_state` so it remains available throughout the workflow.
 
 ---
 
-## 2. Evidence Collection
+# 4. Evidence Processing
 
-DeciScope supports multiple evidence sources:
+## Text Evidence
 
 ```text
-                    ┌── Text Context
-                    │
-                    ├── CSV Activity Data
-                    │
-Decision ──→ Evidence ── Image Upload
-                    │
-                    ├── Camera Input
-                    │
-                    └── Voice Input
+User Context
+     ↓
+Streamlit Input
+     ↓
+Session State
+     ↓
+Gemini Analysis Context
 ```
 
-This allows the decision analysis to use both structured and unstructured evidence.
+Additional context allows the user to explain circumstances that may not be represented by structured data.
 
 ---
 
-# 📊 3. Data Processing Pipeline
-
-CSV activity data is processed using Pandas.
+## CSV Activity Data
 
 ```text
 CSV Upload
-    ↓
+     ↓
 Pandas DataFrame
-    ↓
+     ↓
 Data Validation
-    ↓
-Interactive st.data_editor
-    ↓
-Metric Calculation
-    ↓
-Workload Insights
-    ↓
+     ↓
+Activity Metrics
+     ↓
 Plotly Visualizations
+     ↓
+Decision Analysis
 ```
 
-The application generates visual insights such as:
+The activity dataset can contain information such as:
 
-- Hours by Category
-- Workload by Priority
-- Daily Time Allocation
-- Development Time Percentage
-- High-Priority Activity Insights
+- Date
+- Category
+- Hours
+- Priority
+
+The application calculates workload-related metrics and visualizes the user's tracked activity.
 
 ---
 
-# 🤖 4. Gemini AI Pipeline
-
-The collected evidence is combined with the decision context and passed to the Gemini AI engine.
+## Image Evidence
 
 ```text
-Decision Context
-       +
-User Context
-       +
-CSV Insights
-       +
-Image Evidence
-       +
-Camera Evidence
-       +
-Voice Context
-       ↓
-┌──────────────────────┐
-│    Gemini AI Engine  │
-└──────────┬───────────┘
-           ↓
-   Structured Analysis
+Image Upload
+     ↓
+Streamlit Image Input
+     ↓
+Gemini Vision Analysis
+     ↓
+Visual Context
+     ↓
+Decision Analysis
 ```
 
-Gemini is used as a **decision analysis engine**, rather than as a generic chatbot.
-
-The analysis considers the user's specific decision, goals, workload, and available evidence.
+Images can provide additional context such as schedules, documents, posters, screenshots, or other visual evidence relevant to the decision.
 
 ---
 
-# 🧮 5. Decision Analysis
-
-The AI analysis produces structured decision factors:
+## Camera Evidence
 
 ```text
-Career Value
-Skill Alignment
-Networking Value
-Time Fit
-Deadline Safety
+Camera Input
+     ↓
+Captured Image
+     ↓
+Gemini Vision
+     ↓
+Visual Context
+     ↓
+Decision Analysis
 ```
 
-These factors contribute to the overall decision score.
-
-```text
-Decision Factors
-       ↓
-Decision Score
-       ↓
-┌────────────────────────────┐
-│ Recommendation             │
-│ Risk Level                 │
-│ Decision Insights          │
-│ Key Considerations         │
-└────────────────────────────┘
-```
+The camera input allows users to provide real-world visual evidence directly from the application.
 
 ---
 
-# 🔄 6. Scenario Simulation
-
-The scenario engine allows the user to modify decision factors and observe how the outcome changes.
+## Voice Evidence
 
 ```text
-Original Decision
-       ↓
-Original Score
-       ↓
-What-If Parameters
-       ↓
-Scenario Score
-       ↓
-Comparison
-       ↓
-Decision Change
+Voice Recording
+     ↓
+Audio Input
+     ↓
+AI Processing
+     ↓
+Context Extraction
+     ↓
+Decision Analysis
 ```
 
-Example:
-
-```text
-Original Score → 72
-
-Change:
-Time Fit ↓
-Career Value ↑
-
-        ↓
-
-Scenario Score → 78
-```
-
-This helps users understand **which conditions could change the decision**.
+Voice evidence provides a natural way for users to describe their situation.
 
 ---
 
-# 📑 7. Intelligence Report
+# 5. Gemini AI Integration
 
-The final report combines the major outputs of the system.
+Gemini is used as the application's decision-analysis engine.
 
-```text
-                    ┌── Decision
-                    │
-                    ├── Evidence
-                    │
-                    ├── Decision Score
-                    │
-                    ├── Recommendation
-                    │
-                    ├── Risk Level
-                    │
-                    ├── Scenario Results
-                    │
-                    └── Key Insights
-                           ↓
-                 ┌───────────────────┐
-                 │ Intelligence      │
-                 │ Report             │
-                 └─────────┬─────────┘
-                           ↓
-                    Download Report
-```
-
-The report provides a consolidated view of the decision so the user can review the reasoning and scenario outcomes.
-
----
-
-# 🧩 Application Modules
-
-| Module | Responsibility |
-|---|---|
-| `app.py` | Main Streamlit application and workflow |
-| `gemini_service.py` | Gemini API communication and AI analysis |
-| `prompts.py` | Structured AI prompts |
-| `utils.py` | Data processing, scoring and helper functions |
-| `requirements.txt` | Python dependencies |
-| `.streamlit/secrets.toml` | Secure API configuration |
-
----
-
-# 🗃️ State Management
-
-DeciScope uses Streamlit `st.session_state` to maintain information between interactions and workflow stages.
-
-Important state categories include:
-
-```text
-Decision State
-    ↓
-Decision Question
-Decision Goal
-Analysis Status
-
-Evidence State
-    ↓
-Uploaded Data
-Visual Evidence
-Voice Context
-User Context
-
-Analysis State
-    ↓
-Decision Score
-Recommendation
-Risk Level
-Decision Factors
-
-Scenario State
-    ↓
-Scenario Values
-Scenario Score
-Scenario Comparison
-
-Report State
-    ↓
-Brief Viewed
-Report Data
-```
-
-This prevents important information from being lost when Streamlit reruns the application.
-
----
-
-# 🔐 API Integration Strategy
-
-Gemini API access is isolated from the main UI logic through:
+The integration is separated from the main application logic through:
 
 ```text
 app.py
    ↓
 gemini_service.py
    ↓
-Gemini API
+Google Gemini API
+   ↓
+AI Response
+   ↓
+Streamlit Application
 ```
 
-The API key is stored securely through Streamlit Secrets rather than being hard-coded.
+The application does not treat Gemini as a generic chatbot.
 
-```text
-Streamlit Secrets
-       ↓
-GEMINI_API_KEY
-       ↓
-Gemini Service
-       ↓
-Gemini API
-```
+Instead, the AI receives decision-specific context such as:
+
+- Decision question
+- Primary goal
+- User context
+- Activity information
+- Workload metrics
+- Visual evidence
+- Voice context
+- Scenario information
+
+This allows the generated analysis to remain focused on the user's specific decision.
 
 ---
 
-# ☁️ Deployment Architecture
+# 6. Prompt Engineering
 
-DeciScope is deployed through Streamlit Community Cloud.
+Prompt definitions are maintained separately in:
+
+```text
+prompts.py
+```
+
+The prompts are designed to provide Gemini with structured decision context.
+
+The general process is:
+
+```text
+Decision Data
+     +
+User Context
+     +
+Evidence
+     +
+Activity Metrics
+     +
+Scenario Information
+          ↓
+Dynamic Prompt
+          ↓
+Gemini
+          ↓
+Structured Analysis
+```
+
+This separation makes the AI instructions easier to maintain and modify without changing the main Streamlit interface.
+
+---
+
+# 7. Application Modules
+
+## `app.py`
+
+The main application module.
+
+Responsibilities include:
+
+- Streamlit interface
+- Sidebar navigation
+- Page workflow
+- Session state
+- Decision creation
+- Evidence collection
+- Data visualization
+- Scenario interaction
+- Decision brief
+- Report interface
+
+---
+
+## `gemini_service.py`
+
+Handles Gemini-related functionality.
+
+Responsibilities include:
+
+- Gemini API communication
+- AI analysis requests
+- Multimodal processing
+- AI response handling
+- Error handling for API requests
+
+---
+
+## `prompts.py`
+
+Contains structured prompts used by the Gemini analysis pipeline.
+
+Responsibilities include:
+
+- System instructions
+- Decision-analysis prompts
+- Dynamic context construction
+- Scenario-analysis prompts
+
+---
+
+## `utils.py`
+
+Contains reusable application utilities.
+
+Responsibilities may include:
+
+- Data processing
+- Activity metrics
+- Decision calculations
+- Risk calculations
+- Recommendation helpers
+- Other reusable functions
+
+---
+
+# 8. Session State Management
+
+Streamlit applications rerun when users interact with widgets.
+
+DeciScope uses `st.session_state` to preserve important information throughout the multi-step workflow.
+
+Important state variables include information related to:
+
+```text
+Decision
+Evidence
+Analysis
+Scenarios
+Decision Brief
+```
+
+Examples include:
+
+```text
+decision_question
+decision_goal
+uploaded_data
+uploaded_image
+camera_image
+voice_context
+analysis_complete
+scenario_used
+brief_viewed
+```
+
+This prevents previously collected information from being lost during Streamlit reruns.
+
+---
+
+# 9. Data Visualization
+
+Pandas is used to process structured activity data.
+
+Plotly is used to create interactive visualizations.
+
+The visualization pipeline is:
+
+```text
+CSV
+ ↓
+Pandas DataFrame
+ ↓
+Grouped / Aggregated Data
+ ↓
+Plotly
+ ↓
+Interactive Visualization
+```
+
+DeciScope can visualize areas such as:
+
+- Hours by category
+- Workload by priority
+- Daily time allocation
+- Activity insights
+
+The application also uses interactive Streamlit components such as:
+
+```python
+st.data_editor()
+```
+
+which allows users to review and modify uploaded activity data.
+
+---
+
+# 10. Decision Analysis
+
+The analysis stage combines the collected evidence and decision context.
+
+The general process is:
+
+```text
+Decision
+   +
+Evidence
+   +
+Activity Insights
+   +
+User Context
+        ↓
+AI Analysis
+        ↓
+Decision Factors
+        ↓
+Decision Score
+        ↓
+Risk Assessment
+        ↓
+Recommendation
+```
+
+The analysis is designed to help users understand the trade-offs associated with a decision rather than simply provide a generic AI response.
+
+---
+
+# 11. Scenario Analysis
+
+DeciScope allows users to explore alternative decision conditions.
+
+```text
+Original Decision
+       ↓
+Scenario Parameters
+       ↓
+Scenario Analysis
+       ↓
+Alternative Outcome
+       ↓
+Comparison
+```
+
+This allows users to examine how changing relevant assumptions can affect the decision.
+
+---
+
+# 12. Intelligence Report
+
+The final stage combines the major outputs of the decision workflow.
+
+```text
+Decision
+   +
+Evidence
+   +
+Analysis
+   +
+Risk
+   +
+Recommendation
+   +
+Scenarios
+       ↓
+Intelligence Report
+```
+
+The report provides a consolidated view of the decision and its supporting analysis.
+
+Where implemented, the report can also be downloaded by the user.
+
+---
+
+# 13. Error Handling
+
+The application provides user-facing feedback for common situations including:
+
+- Empty decision input
+- Invalid CSV files
+- Missing evidence
+- Missing configuration
+- Gemini API failures
+- Invalid or incomplete responses
+
+Streamlit feedback components are used where appropriate:
+
+```python
+st.info()
+st.warning()
+st.error()
+st.success()
+```
+
+This helps users understand application states without exposing unnecessary technical details.
+
+---
+
+# 14. API Security
+
+The Gemini API key is not hard-coded into the application.
+
+For deployment, the API credential is stored using:
+
+```text
+Streamlit Community Cloud Secrets
+```
+
+Example configuration:
+
+```toml
+GEMINI_API_KEY = "your_api_key_here"
+```
+
+The actual API key must never be committed to the GitHub repository.
+
+---
+
+# 15. Deployment Architecture
+
+DeciScope is deployed using Streamlit Community Cloud.
+
+```mermaid
+flowchart LR
+
+    DEV[Developer]
+    GH[GitHub Repository]
+    SC[Streamlit Community Cloud]
+    APP[DeciScope Application]
+    SECRET[Streamlit Secrets]
+    GEMINI[Google Gemini API]
+    USER[End User]
+
+    DEV --> GH
+    GH --> SC
+    SECRET --> SC
+    SC --> APP
+    APP --> GEMINI
+    USER --> APP
+```
+
+### Deployment Flow
 
 ```text
 GitHub Repository
@@ -376,115 +600,162 @@ Streamlit Community Cloud
        ↓
 requirements.txt
        ↓
-Streamlit Application
+Application Deployment
        ↓
-Secure Streamlit Secrets
+Streamlit Secrets
        ↓
 Gemini API
 ```
 
-### Live Application
+Live application:
 
-**[DeciScope](https://deciscope.streamlit.app/)**
-
----
-
-# 🎯 Architectural Design Principles
-
-DeciScope follows these design principles:
-
-### 1. Modular Design
-
-AI services, prompts, utilities, and UI logic are separated into different modules.
-
-### 2. Stateful Workflow
-
-`st.session_state` maintains information throughout the five-stage decision workflow.
-
-### 3. Multimodal Evidence
-
-The system can combine text, structured data, images, camera input, and voice context.
-
-### 4. Evidence-Based Analysis
-
-The AI analysis is based on the decision context and evidence collected from the user.
-
-### 5. Interactive Visualization
-
-Pandas and Plotly convert structured activity data into understandable visual insights.
-
-### 6. Scenario-Based Reasoning
-
-Users can test how changes in decision factors could affect the final outcome.
-
-### 7. Secure API Handling
-
-Sensitive Gemini credentials are stored using Streamlit Secrets.
+https://deciscope.streamlit.app/
 
 ---
 
-# 🔁 Complete System Flow
+# 16. Technology Stack
+
+| Technology | Purpose |
+|---|---|
+| Python | Application logic |
+| Streamlit | Web application and UI |
+| Google Gemini | AI decision analysis |
+| Gemini Vision | Visual evidence analysis |
+| Gemini Audio | Voice evidence processing |
+| Pandas | Data processing |
+| Plotly | Interactive visualization |
+| Pillow | Image processing |
+| Git | Version control |
+| GitHub | Source code and documentation |
+| Streamlit Community Cloud | Cloud deployment |
+
+---
+
+# 17. Project Structure
 
 ```text
-                         USER
-                           │
-                           ▼
-                  ┌─────────────────┐
-                  │ 01 · DECISION   │
-                  └────────┬────────┘
-                           │
-                           ▼
-                  ┌─────────────────┐
-                  │ 02 · EVIDENCE   │
-                  └────────┬────────┘
-                           │
-             ┌─────────────┼─────────────┐
-             ▼             ▼             ▼
-          Pandas        Gemini        Visual/Audio
-          Data          Inputs          Evidence
-             │             │             │
-             └─────────────┼─────────────┘
-                           ▼
-                  ┌─────────────────┐
-                  │ 03 · ANALYSIS   │
-                  └────────┬────────┘
-                           │
-                           ▼
-                 Decision Factors
-                           │
-                           ▼
-                  Score + Risk +
-                  Recommendation
-                           │
-                           ▼
-                  ┌─────────────────┐
-                  │ 04 · SCENARIOS  │
-                  └────────┬────────┘
-                           │
-                           ▼
-                    What-If Analysis
-                           │
-                           ▼
-                  Scenario Comparison
-                           │
-                           ▼
-                  ┌─────────────────┐
-                  │ 05 · INTELLIGENCE│
-                  │      REPORT     │
-                  └────────┬────────┘
-                           │
-                           ▼
-                    Download Report
+DECISCOPE/
+│
+├── app.py
+├── gemini_service.py
+├── prompts.py
+├── utils.py
+├── requirements.txt
+├── README.md
+│
+├── docs/
+│   └── architecture.md
+│
+└── assets/
+    └── deciscope_logo.png
 ```
 
 ---
 
-## 🧠 Architecture Summary
+# 18. Design Principles
 
-DeciScope combines **Streamlit, Pandas, Plotly and Gemini multimodal AI** into a structured decision-support pipeline.
+DeciScope follows these core principles:
 
-The architecture transforms:
+### Evidence-driven
 
-**User Decision → Multimodal Evidence → Data Processing → AI Analysis → Scenario Simulation → Intelligence Report**
+The application encourages users to support decisions with multiple forms of evidence.
 
-This design allows DeciScope to provide structured, evidence-aware decision support while keeping the user in control of the final decision.
+### Multimodal
+
+Text, structured data, images, camera input, and voice can contribute to the decision context.
+
+### Explainable
+
+The application presents decision factors, risks, scenarios, and recommendations rather than only returning a single AI answer.
+
+### Interactive
+
+Users can edit data, explore visualizations, and test alternative scenarios.
+
+### User-controlled
+
+DeciScope is designed to assist the user's decision-making rather than blindly make decisions on the user's behalf.
+
+---
+
+# 19. End-to-End System
+
+The complete DeciScope architecture can be summarized as:
+
+```text
+                    ┌─────────────────┐
+                    │      USER       │
+                    └────────┬────────┘
+                             │
+                             ▼
+                  ┌─────────────────────┐
+                  │  STREAMLIT UI       │
+                  └──────────┬──────────┘
+                             │
+              ┌──────────────┴──────────────┐
+              │                             │
+              ▼                             ▼
+       ┌─────────────┐              ┌────────────────┐
+       │  DECISION   │              │    EVIDENCE    │
+       └──────┬──────┘              └───────┬────────┘
+              │                             │
+              │              ┌──────────────┼──────────────┐
+              │              │              │              │
+              │              ▼              ▼              ▼
+              │             CSV           IMAGE          VOICE
+              │              │              │              │
+              │              ▼              ▼              ▼
+              │           PANDAS        GEMINI         GEMINI
+              │              │           VISION          AUDIO
+              │              │              │              │
+              └──────────────┴──────────────┴──────────────┘
+                             │
+                             ▼
+                    ┌─────────────────┐
+                    │   GEMINI AI     │
+                    │     ENGINE      │
+                    └────────┬────────┘
+                             │
+                             ▼
+                    ┌─────────────────┐
+                    │    ANALYSIS     │
+                    └────────┬────────┘
+                             │
+                ┌────────────┼────────────┐
+                ▼            ▼            ▼
+             SCORE         RISK      RECOMMENDATION
+                │            │            │
+                └────────────┼────────────┘
+                             │
+                             ▼
+                    ┌─────────────────┐
+                    │    SCENARIOS     │
+                    └────────┬────────┘
+                             │
+                             ▼
+                    ┌─────────────────┐
+                    │ DECISION BRIEF  │
+                    └────────┬────────┘
+                             │
+                             ▼
+                    ┌─────────────────┐
+                    │   INTELLIGENCE  │
+                    │     REPORT      │
+                    └─────────────────┘
+```
+
+---
+
+# 20. Conclusion
+
+DeciScope combines Streamlit's interactive application capabilities, Pandas-based data processing, Plotly visualization, and Google's Gemini multimodal AI to create an evidence-driven decision intelligence workflow.
+
+The architecture separates the user interface, AI services, prompts, and utility logic while using Streamlit session state to maintain information across the multi-stage workflow.
+
+The result is a structured pipeline:
+
+```text
+Define → Collect → Analyze → Simulate → Review
+```
+
+designed to help users make more informed decisions using their own context and evidence.
