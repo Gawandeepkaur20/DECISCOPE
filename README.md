@@ -158,60 +158,12 @@ The application uses **Pandas** for data processing and **Plotly** for interacti
 
 ---
 
-# 🏗️ System Architecture
+## 🏗️ System Architecture
 
-```mermaid
-flowchart TD
+For the complete system architecture, data flow, modules, state management, and deployment architecture:
 
-    A[User] --> B[Streamlit Interface]
+👉 [View Architecture Documentation](docs/architecture.md)
 
-    B --> C[01 Decision]
-    B --> D[02 Evidence]
-    B --> E[03 Analysis]
-    B --> F[04 Scenarios]
-    B --> G[05 Intelligence Report]
-
-    D --> D1[CSV Data]
-    D --> D2[Image Upload]
-    D --> D3[Camera Input]
-    D --> D4[Voice Input]
-    D --> D5[Written Context]
-
-    D1 --> H[Pandas Data Pipeline]
-
-    D2 --> I[Gemini Vision]
-    D3 --> I
-    D4 --> J[Gemini Audio]
-    D5 --> K[Gemini Text]
-
-    C --> L[Decision Context]
-
-    H --> L
-    I --> L
-    J --> L
-    K --> L
-
-    L --> M[Gemini Decision Engine]
-
-    M --> N[Decision Factors]
-
-    N --> O[Decision Score]
-    N --> P[Recommendation]
-    N --> Q[Risk Level]
-
-    N --> F
-
-    F --> R[Scenario Score]
-    R --> S[Scenario Comparison]
-
-    O --> G
-    P --> G
-    Q --> G
-    S --> G
-
-    G --> T[Downloadable Report]
-
-```
 # 🛠️ Technology Stack
 
 | Technology | Role |
