@@ -932,7 +932,6 @@ if page == "Evidence":
 
             if voice_transcript.strip():
                 with st.container(border=True):
-                    st.subheader("Voice Transcript")
                     st.write(voice_transcript)
             else:
                 st.info(
