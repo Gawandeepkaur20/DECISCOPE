@@ -4,7 +4,7 @@
 
 > **Turn scattered evidence into structured decisions.**
 
-DeciScope is a multimodal AI-powered decision intelligence application built with **Python, Streamlit, Pandas, Plotly, and Google Gemini**.
+DeciScope is a multimodal AI-powered decision intelligence application built with **Python, Streamlit, Plotly, and Google Gemini**.
 
 It helps users evaluate real-world decisions by combining **text, workload data, images, camera input, and voice context** into a structured analysis.
 
@@ -60,14 +60,11 @@ Decisions become more reliable when they are supported by evidence.
 
 DeciScope allows users to provide:
 
-- CSV activity and workload data
 - Written context
 - Images
 - Screenshots
 - Camera input
 - Voice context
-
-Uploaded CSV files can be edited directly inside the application using an interactive `st.data_editor`.
 
 ---
 
@@ -142,29 +139,12 @@ DeciScope combines multiple forms of evidence instead of relying only on text.
 | Input | Purpose |
 |---|---|
 | 📝 Text | Decision and personal context |
-| 📊 CSV | Activity and workload analysis |
 | 🖼️ Image | Visual evidence analysis |
 | 📷 Camera | Real-world visual evidence |
 | 🎙️ Audio | Natural voice context |
 | 🤖 Gemini | AI-powered decision analysis |
 
 This creates a single workspace where different types of evidence can contribute to the same decision.
-
----
-
-# 📊 Data Visualization
-
-DeciScope transforms uploaded activity data into interactive visual insights.
-
-Current visualizations include:
-
-- **Hours by Category**
-- **Workload by Priority**
-- **Daily Time Allocation**
-- **Development Time Percentage**
-- **High-Priority Activity Insights**
-
-The application uses **Pandas** for data processing and **Plotly** for interactive visualization.
 
 ---
 
@@ -177,8 +157,6 @@ The application uses **Pandas** for data processing and **Plotly** for interacti
 | **Google Gemini** | AI decision analysis |
 | **Gemini Vision** | Image-based evidence analysis |
 | **Gemini Audio** | Voice evidence processing |
-| **Pandas** | Data processing |
-| **Plotly** | Interactive charts |
 | **Pillow** | Image processing |
 | **Git & GitHub** | Version control |
 | **Streamlit Community Cloud** | Deployment |
@@ -380,7 +358,6 @@ Decision
   ↓
 Evidence
   ├── Text
-  ├── CSV
   ├── Image
   ├── Camera
   └── Voice
@@ -404,9 +381,7 @@ The goal is to move from simple **AI answers** toward **AI-assisted decision int
 
 - ✅ Multimodal Gemini integration
 - ✅ Text, image and audio evidence
-- ✅ CSV workload analysis
-- ✅ Interactive `st.data_editor`
-- ✅ Plotly data visualizations
+- ✅ Plotly decision profile visualization
 - ✅ Dynamic KPI cards
 - ✅ Decision scoring
 - ✅ Risk assessment

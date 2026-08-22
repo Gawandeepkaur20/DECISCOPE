@@ -1,16 +1,8 @@
 import streamlit as st
 from pathlib import Path
-import pandas as pd
-import plotly.express as px
 from PIL import Image
 
 from services.gemini_service import analyze_decision, transcribe_audio
-from utils.data_processor import (
-    process_uploaded_csv,
-    validate_dataframe,
-    prepare_dataframe,
-    calculate_metrics
-)
 from utils.session_manager import initialize_session_state
 from services.decision_engine import (
     calculate_decision_score,
@@ -66,8 +58,6 @@ PAGE_OPTIONS = [
 
 def get_evidence_count():
     count = 0
-    if st.session_state.get("uploaded_data") is not None:
-        count += 1
     if (
         st.session_state.get("uploaded_image") is not None
         or st.session_state.get("camera_image") is not None
@@ -88,7 +78,6 @@ def reset_decision_state():
     keys_to_reset = [
         "decision_question",
         "decision_goal",
-        "uploaded_data",
         "uploaded_image",
         "camera_image",
         "voice_input",
@@ -239,11 +228,6 @@ with st.sidebar:
     st.markdown("### EVIDENCE")
 
     evidence_count = get_evidence_count()
-
-    if st.session_state.get("uploaded_data") is not None:
-        st.write("Complete - Activity data")
-    else:
-        st.caption("Open - Activity data")
 
     if (
         st.session_state.get("uploaded_image") is not None
@@ -525,21 +509,8 @@ if page == "Decision":
         with col2:
 
             evidence_count = (
-                int(
-                    st.session_state.uploaded_data
-                    is not None
-                )
-                +
-                int(
-                    st.session_state.vision_data
-                    is not None
-                )
-                +
-                int(
-                    bool(
-                        st.session_state.voice_context
-                    )
-                )
+                int(st.session_state.vision_data is not None)
+                + int(bool(st.session_state.voice_context))
             )
 
             st.metric(
@@ -603,7 +574,6 @@ if page == "Evidence":
     # EVIDENCE STATUS
     # =====================================================
 
-    data_ready = st.session_state.uploaded_data is not None
     image_ready = (
         st.session_state.uploaded_image is not None
         or st.session_state.camera_image is not None
@@ -615,161 +585,6 @@ if page == "Evidence":
 
     
     st.divider()
-
-    # =====================================================
-    # ACTIVITY DATA
-    # =====================================================
-
-    st.caption("01 - ACTIVITY DATA")
-
-    with st.container(border=True):
-
-        st.subheader("Activity & workload")
-
-        st.caption(
-            "Upload structured information about your time, "
-            "workload and priorities."
-        )
-
-        uploaded_file = st.file_uploader(
-            "Upload activity data",
-            type=["csv"],
-            help="CSV containing date, category, hours and priority."
-        )
-
-        if uploaded_file is not None:
-
-            try:
-
-                data = pd.read_csv(uploaded_file)
-
-                st.session_state.uploaded_data = data
-
-                st.success(
-                    f"Loaded {len(data)} activity records."
-                )
-
-            except Exception as error:
-
-                st.error(
-                    f"Unable to read the CSV file: {error}"
-                )
-
-        data = st.session_state.get("uploaded_data")
-
-        if data is not None:
-
-            edited_df = st.data_editor(
-                data,
-                use_container_width=True,
-                num_rows="dynamic"
-            )
-
-            st.session_state.uploaded_data = edited_df
-
-            metrics = calculate_metrics(edited_df)
-
-            # ---------------------------------------------
-            # WORKLOAD SUMMARY
-            # ---------------------------------------------
-
-            metric1, metric2, metric3 = st.columns(3)
-
-            with metric1:
-                st.metric(
-                    "Tracked Hours",
-                    f"{metrics['total_hours']:.1f}"
-                )
-
-            with metric2:
-                st.metric(
-                    "Development Hours",
-                    f"{metrics['development_hours']:.1f}"
-                )
-
-            with metric3:
-                st.metric(
-                    "High Priority",
-                    metrics["high_priority"]
-                )
-
-            # ---------------------------------------------
-            # ACTIVITY CHARTS
-            # ---------------------------------------------
-
-            st.write("")
-
-            chart_col1, chart_col2 = st.columns(2)
-
-            with chart_col1:
-
-                category_data = (
-                    edited_df
-                    .groupby(
-                        "category",
-                        as_index=False
-                    )["hours"]
-                    .sum()
-                )
-
-                fig_category = px.bar(
-                    category_data,
-                    x="category",
-                    y="hours",
-                    title="Hours by Category"
-                )
-
-                st.plotly_chart(
-                    fig_category,
-                    use_container_width=True
-                )
-
-            with chart_col2:
-
-                priority_data = (
-                    edited_df
-                    .groupby(
-                        "priority",
-                        as_index=False
-                    )["hours"]
-                    .sum()
-                )
-
-                fig_priority = px.pie(
-                    priority_data,
-                    names="priority",
-                    values="hours",
-                    title="Workload by Priority"
-                )
-
-                st.plotly_chart(
-                    fig_priority,
-                    use_container_width=True
-                )
-
-            daily_data = (
-                edited_df
-                .groupby(
-                    "date",
-                    as_index=False
-                )["hours"]
-                .sum()
-            )
-
-            fig_daily = px.line(
-                daily_data,
-                x="date",
-                y="hours",
-                markers=True,
-                title="Daily Time Allocation"
-            )
-
-            st.plotly_chart(
-                fig_daily,
-                use_container_width=True
-            )
-
-    st.write("")
 
     # =====================================================
     # CONTEXT + VISUAL EVIDENCE
@@ -945,7 +760,6 @@ if page == "Evidence":
     # =====================================================
 
     evidence_count = sum([
-        data_ready,
         image_ready,
         context_ready,
         voice_ready
@@ -1059,16 +873,6 @@ if page == "Analysis":
 
                     st.session_state.vision_data = image
 
-                data_context = ""
-
-                if st.session_state.uploaded_data is not None:
-
-                    data = st.session_state.uploaded_data
-
-                    data_context = data.to_string(
-                        index=False
-                    )
-
                 user_context = st.session_state.get(
                     "user_context",
                     ""
@@ -1100,7 +904,7 @@ if page == "Analysis":
 
                             audio=voice_input,
 
-                            data_context=data_context
+                            data_context=""
                         )
 
                         # -------------------------------------

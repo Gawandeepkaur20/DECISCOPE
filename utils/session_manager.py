@@ -20,7 +20,6 @@ def initialize_session_state():
         # -----------------------------
         # Evidence
         # -----------------------------
-        "uploaded_data": None,
         "vision_data": None,
         "voice_context": "",
 
