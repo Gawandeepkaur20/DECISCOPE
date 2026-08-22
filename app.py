@@ -4,7 +4,7 @@ import pandas as pd
 import plotly.express as px
 from PIL import Image
 
-from services.gemini_service import analyze_decision
+from services.gemini_service import analyze_decision, transcribe_audio
 from utils.data_processor import (
     process_uploaded_csv,
     validate_dataframe,
@@ -93,6 +93,7 @@ def reset_decision_state():
         "camera_image",
         "voice_input",
         "voice_transcript",
+        "voice_transcript_audio_id",
         "voice_context",
         "user_context",
         "vision_data",
@@ -910,6 +911,19 @@ if page == "Evidence":
 
             st.success("Voice context added")
 
+            audio_id = hash(voice_input.getvalue())
+            if st.session_state.get("voice_transcript_audio_id") != audio_id:
+                st.session_state.voice_transcript_audio_id = audio_id
+                st.session_state.voice_transcript = ""
+
+                try:
+                    with st.spinner("Transcribing voice evidence..."):
+                        st.session_state.voice_transcript = transcribe_audio(
+                            voice_input
+                        )
+                except Exception:
+                    st.session_state.voice_transcript = ""
+
             st.caption("VOICE TRANSCRIPT")
             voice_transcript = st.session_state.get(
                 "voice_transcript",
@@ -922,7 +936,7 @@ if page == "Evidence":
                     st.write(voice_transcript)
             else:
                 st.info(
-                    "The transcript will appear here after the voice evidence is analyzed."
+                    "No transcript could be generated from this recording."
                 )
 
     st.write("")

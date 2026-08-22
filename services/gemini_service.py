@@ -315,3 +315,30 @@ Return only valid JSON matching the required schema.
         raise ValueError(
             "Gemini returned an invalid structured response."
         )
+
+
+def transcribe_audio(audio):
+    """Transcribe a recorded audio input with the existing Gemini client."""
+
+    if audio is None:
+        return ""
+
+    audio_part = types.Part.from_bytes(
+        data=audio.getvalue(),
+        mime_type=audio.type or "audio/wav"
+    )
+
+    response = get_gemini_client().models.generate_content(
+        model=MODEL_NAME,
+        contents=[
+            "Transcribe all spoken words in this audio verbatim. "
+            "Return only the transcript text. If no speech is understandable, "
+            "return an empty response.",
+            audio_part
+        ],
+        config=types.GenerateContentConfig(
+            temperature=0.0,
+        ),
+    )
+
+    return (response.text or "").strip()
