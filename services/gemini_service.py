@@ -235,7 +235,8 @@ If audio evidence is provided:
   available time, concerns and motivations.
 - Treat the audio as user-provided evidence.
 - Do not invent information.
-- Do not repeat the entire transcript unless necessary.
+- Return the complete spoken content verbatim in the voice_transcript field.
+- If the audio cannot be understood, return an empty voice_transcript.
 """
     IMAGE_INSTRUCTION = """
 If an image is provided:
