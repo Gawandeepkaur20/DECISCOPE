@@ -92,6 +92,7 @@ def reset_decision_state():
         "uploaded_image",
         "camera_image",
         "voice_input",
+        "voice_transcript",
         "voice_context",
         "user_context",
         "vision_data",
@@ -909,6 +910,21 @@ if page == "Evidence":
 
             st.success("Voice context added")
 
+            st.caption("VOICE TRANSCRIPT")
+            voice_transcript = st.session_state.get(
+                "voice_transcript",
+                ""
+            )
+
+            if voice_transcript.strip():
+                with st.container(border=True):
+                    st.subheader("Voice Transcript")
+                    st.write(voice_transcript)
+            else:
+                st.info(
+                    "The transcript will appear here after the voice evidence is analyzed."
+                )
+
     st.write("")
 
     # =====================================================
@@ -1080,6 +1096,9 @@ if page == "Analysis":
 
                         st.session_state.analysis_result = result
                         st.session_state.analysis_complete = True
+                        st.session_state.voice_transcript = str(
+                            result.get("voice_transcript", "")
+                        ).strip()
 
                         factors = result.get(
                             "decision_factors",
@@ -1223,6 +1242,27 @@ if page == "Analysis":
         # =====================================================
         # EVIDENCE SIGNALS
         # =====================================================
+
+        st.write("")
+        st.caption("VOICE EVIDENCE")
+
+        with st.container(border=True):
+
+            st.subheader("Voice Transcript")
+
+            voice_transcript = st.session_state.get(
+                "voice_transcript",
+                ""
+            )
+
+            if voice_transcript.strip():
+                st.write(voice_transcript)
+            elif st.session_state.get("voice_input") is not None:
+                st.warning(
+                    "The recording was included, but no transcript was returned."
+                )
+            else:
+                st.caption("No voice evidence was provided.")
 
         st.write("")
 

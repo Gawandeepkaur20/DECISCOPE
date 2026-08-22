@@ -112,6 +112,11 @@ DECISION_SCHEMA = {
             }
         },
 
+        "voice_transcript": {
+            "type": "string",
+            "description": "Verbatim transcript of the supplied audio, or an empty string when no audio is provided or it cannot be transcribed."
+        },
+
         "evidence": {
             "type": "array",
             "items": {
@@ -195,6 +200,7 @@ DECISION_SCHEMA = {
     "required": [
         "decision_summary",
         "visual_evidence",
+        "voice_transcript",
         "evidence",
         "benefits",
         "risks",

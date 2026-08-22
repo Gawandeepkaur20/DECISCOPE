@@ -12,6 +12,7 @@ def initialize_session_state():
         "uploaded_image": None,
         "camera_image": None,
         "voice_input": None,
+        "voice_transcript": "",
         "user_context": "",
         "scenario_used": False,
         "brief_viewed": False,
