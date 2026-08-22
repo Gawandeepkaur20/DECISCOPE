@@ -1,0 +1,15 @@
+Day,Activity,Category,Priority,Hours
+Monday,College Classes,Academic,High,4
+Monday,AI Project Work,Development,High,3
+Tuesday,DSA Practice,Learning,Medium,2
+Tuesday,Gym,Personal,Low,1
+Wednesday,College Classes,Academic,High,4
+Wednesday,AI Learning,Learning,Medium,2
+Thursday,AI Project Work,Development,High,3
+Thursday,Assignments,Academic,High,2
+Friday,College Classes,Academic,High,4
+Friday,Hackathon Preparation,Development,Medium,3
+Saturday,AI Project Work,Development,High,5
+Saturday,Assignments,Academic,High,2
+Sunday,Study and Revision,Learning,Medium,3
+Sunday,Personal Time,Personal,Low,2

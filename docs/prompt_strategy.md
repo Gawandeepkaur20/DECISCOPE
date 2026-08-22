@@ -79,6 +79,8 @@ Decision
    +
 Text Context
    +
+CSV Insights
+   +
 Image Evidence
    +
 Voice Context
@@ -206,6 +208,35 @@ my AI skills while managing my current workload.
 This allows Gemini to consider circumstances that may not be visible from structured activity data.
 
 ---
+
+# 6. Activity Data Context
+
+When a CSV file is uploaded, DeciScope processes the dataset using Pandas before using the resulting information in the analysis.
+
+The process is:
+
+```text
+CSV
+ ↓
+Pandas DataFrame
+ ↓
+Metrics
+ ↓
+Activity Insights
+ ↓
+Gemini Context
+```
+
+Relevant information can include:
+
+- Total tracked hours
+- Development hours
+- Development percentage
+- High-priority activity
+- Category distribution
+- Daily workload
+
+Instead of unnecessarily passing raw data, the application can provide useful derived insights to the AI analysis.
 
 ---
 
@@ -437,6 +468,18 @@ Context
 Gemini
 ```
 
+### CSV evidence
+
+```text
+Decision
+   +
+Context
+   +
+Activity Insights
+   ↓
+Gemini
+```
+
 ### Visual evidence
 
 ```text
@@ -455,6 +498,8 @@ Gemini
 Decision
    +
 Context
+   +
+CSV
    +
 Image
    +
@@ -597,11 +642,13 @@ flowchart TD
 
     C --> D[Evidence Collection]
 
-        D --> E[Visual Evidence]
-        D --> F[Voice Context]
+    D --> E[CSV Activity Insights]
+    D --> F[Visual Evidence]
+    D --> G[Voice Context]
 
     E --> H[Dynamic Prompt]
     F --> H
+    G --> H
     C --> H
     B --> H
     A --> H

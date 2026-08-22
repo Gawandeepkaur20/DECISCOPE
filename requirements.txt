@@ -1,6 +1,7 @@
 streamlit
 google-genai
-Pillow
+pandas
 plotly
+Pillow
 python-dotenv
 reportlab

@@ -1,6 +1,6 @@
 # 🏗️ DeciScope — System Architecture & Technical Design
 
-DeciScope is a multimodal AI-powered decision intelligence application built with Streamlit, Plotly, and Google Gemini.
+DeciScope is a multimodal AI-powered decision intelligence application built with Streamlit, Pandas, Plotly, and Google Gemini.
 
 The system collects a user's decision, supporting evidence, workload data, visual evidence, and contextual information, then uses structured analysis to generate decision insights, risk assessment, recommendations, scenarios, and a downloadable intelligence report.
 
@@ -22,9 +22,14 @@ flowchart TD
     D --> GOAL[Primary Goal]
 
     E --> TXT[Additional Context]
+    E --> CSV[Activity CSV]
     E --> IMG[Image Evidence]
     E --> CAM[Camera Evidence]
     E --> VOICE[Voice Evidence]
+
+    CSV --> PD[Pandas Data Processing]
+    PD --> MET[Activity Metrics]
+    PD --> CHART[Plotly Visualizations]
 
     TXT --> AI[Gemini AI Engine]
     IMG --> AI
@@ -90,6 +95,7 @@ The information is stored using Streamlit session state and becomes the foundati
 The user can provide supporting evidence through:
 
 - Additional text context
+- CSV activity data
 - Image upload
 - Camera input
 - Voice input
@@ -157,6 +163,31 @@ Gemini Analysis Context
 Additional context allows the user to explain circumstances that may not be represented by structured data.
 
 ---
+
+## CSV Activity Data
+
+```text
+CSV Upload
+     ↓
+Pandas DataFrame
+     ↓
+Data Validation
+     ↓
+Activity Metrics
+     ↓
+Plotly Visualizations
+     ↓
+Decision Analysis
+```
+
+The activity dataset can contain information such as:
+
+- Date
+- Category
+- Hours
+- Priority
+
+The application calculates workload-related metrics and visualizes the user's tracked activity.
 
 ---
 
@@ -367,6 +398,7 @@ Examples include:
 ```text
 decision_question
 decision_goal
+uploaded_data
 uploaded_image
 camera_image
 voice_context
@@ -376,6 +408,43 @@ brief_viewed
 ```
 
 This prevents previously collected information from being lost during Streamlit reruns.
+
+---
+
+# 9. Data Visualization
+
+Pandas is used to process structured activity data.
+
+Plotly is used to create interactive visualizations.
+
+The visualization pipeline is:
+
+```text
+CSV
+ ↓
+Pandas DataFrame
+ ↓
+Grouped / Aggregated Data
+ ↓
+Plotly
+ ↓
+Interactive Visualization
+```
+
+DeciScope can visualize areas such as:
+
+- Hours by category
+- Workload by priority
+- Daily time allocation
+- Activity insights
+
+The application also uses interactive Streamlit components such as:
+
+```python
+st.data_editor()
+```
+
+which allows users to review and modify uploaded activity data.
 
 ---
 
@@ -460,6 +529,7 @@ Where implemented, the report can also be downloaded by the user.
 The application provides user-facing feedback for common situations including:
 
 - Empty decision input
+- Invalid CSV files
 - Missing evidence
 - Missing configuration
 - Gemini API failures
@@ -552,6 +622,7 @@ https://deciscope.streamlit.app/
 | Google Gemini | AI decision analysis |
 | Gemini Vision | Visual evidence analysis |
 | Gemini Audio | Voice evidence processing |
+| Pandas | Data processing |
 | Plotly | Interactive visualization |
 | Pillow | Image processing |
 | Git | Version control |
@@ -631,10 +702,10 @@ The complete DeciScope architecture can be summarized as:
               │              ┌──────────────┼──────────────┐
               │              │              │              │
               │              ▼              ▼              ▼
-              │             IMAGE          VOICE
-              │                             │              │
+              │             CSV           IMAGE          VOICE
+              │              │              │              │
               │              ▼              ▼              ▼
-              │                         GEMINI         GEMINI
+              │           PANDAS        GEMINI         GEMINI
               │              │           VISION          AUDIO
               │              │              │              │
               └──────────────┴──────────────┴──────────────┘
@@ -677,7 +748,7 @@ The complete DeciScope architecture can be summarized as:
 
 # 20. Conclusion
 
-DeciScope combines Streamlit's interactive application capabilities, Plotly visualization, and Google's Gemini multimodal AI to create an evidence-driven decision intelligence workflow.
+DeciScope combines Streamlit's interactive application capabilities, Pandas-based data processing, Plotly visualization, and Google's Gemini multimodal AI to create an evidence-driven decision intelligence workflow.
 
 The architecture separates the user interface, AI services, prompts, and utility logic while using Streamlit session state to maintain information across the multi-stage workflow.
 
